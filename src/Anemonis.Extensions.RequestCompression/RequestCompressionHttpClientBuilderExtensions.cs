@@ -23,7 +23,7 @@ public static class RequestCompressionHttpClientBuilderExtensions
 
         DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
         {
-            var compressionProviderRegistry = services.GetRequiredService<IRequestCompressionProviderRegistry>();
+            var compressionProviderRegistry = services.GetRequiredService<RequestCompressionProviderRegistry>();
             var compressionProvider = compressionProviderRegistry.GetProvider(encodingName);
 
             return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel);

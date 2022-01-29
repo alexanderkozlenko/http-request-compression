@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace Anemonis.Extensions.RequestCompression;
 
-public sealed class RequestCompressionProviderRegistry : IRequestCompressionProviderRegistry
+public sealed class RequestCompressionProviderRegistry
 {
     private readonly Func<Dictionary<string, IRequestCompressionProvider>> _providersFactory;
     private readonly IOptions<RequestCompressionOptions> _options;
