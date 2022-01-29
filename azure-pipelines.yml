@@ -1,0 +1,38 @@
+steps:
+- task: UseDotNet@2
+  inputs:
+    useGlobalJson: true
+- script: >
+    dotnet build $(Build.SourcesDirectory)/src/
+    -p:ContinuousIntegrationBuild=true
+    -p:BuildNumber=$(Build.BuildNumber)
+    --configuration $(Build.Configuration)
+- script: >
+    dotnet test $(Build.SourcesDirectory)/src/
+    -p:ContinuousIntegrationBuild=true
+    --configuration $(Build.Configuration)
+    --results-directory $(Common.TestResultsDirectory)
+    --logger TRX
+    --no-build
+- task: PublishTestResults@2
+  inputs:
+    failTaskOnFailedTests: true
+    searchFolder: '$(Common.TestResultsDirectory)'
+    testResultsFiles: '*.trx'
+    testRunner: 'VSTest'
+- script: >
+    dotnet pack $(Build.SourcesDirectory)/src/
+    -p:ContinuousIntegrationBuild=true
+    -p:BuildNumber=$(Build.BuildNumber)
+    --configuration $(Build.Configuration)
+    --output $(Build.ArtifactStagingDirectory)
+    --include-symbols
+    --no-build
+- publish: '$(Build.ArtifactStagingDirectory)'
+  artifact: '$(Build.ArtifactName)'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+- script: >
+    dotnet nuget push $(Build.ArtifactStagingDirectory)/*.nupkg
+    --source $(System.Staging.NuGet.FeedURL)
+    --api-key $(System.Staging.NuGet.APIKey)
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
