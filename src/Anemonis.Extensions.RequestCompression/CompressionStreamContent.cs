@@ -20,11 +20,12 @@ internal sealed class CompressionStreamContent : HttpContent
 
     protected sealed override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken cancellationToken)
     {
-        var inputStream = _compressionProvider.CreateStream(stream, _compressionLevel);
+        var compressionStream = _compressionProvider.CreateStream(stream, _compressionLevel);
 
-        await using (inputStream.ConfigureAwait(false))
+        await using (compressionStream.ConfigureAwait(false))
         {
-            await _originalContent.CopyToAsync(inputStream, context, cancellationToken).ConfigureAwait(false);
+            await _originalContent.CopyToAsync(compressionStream, context, cancellationToken).ConfigureAwait(false);
+            await compressionStream.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -35,17 +36,18 @@ internal sealed class CompressionStreamContent : HttpContent
 
     protected sealed override void SerializeToStream(Stream stream, TransportContext? context, CancellationToken cancellationToken)
     {
-        var inputStream = _compressionProvider.CreateStream(stream, _compressionLevel);
+        var compressionStream = _compressionProvider.CreateStream(stream, _compressionLevel);
 
-        using (inputStream)
+        using (compressionStream)
         {
-            _originalContent.CopyTo(inputStream, context, cancellationToken);
+            _originalContent.CopyTo(compressionStream, context, cancellationToken);
+            compressionStream.Flush();
         }
     }
 
     protected sealed override bool TryComputeLength(out long length)
     {
-        length = 0;
+        length = 0L;
 
         return false;
     }
