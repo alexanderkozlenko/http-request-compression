@@ -1,3 +1,3 @@
 ﻿// © Oleksandr Kozlenko. Licensed under the MIT license.
 
-[assembly: CLSCompliant(false)]
+[assembly: CLSCompliant(true)]
