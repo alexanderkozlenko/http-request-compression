@@ -1,4 +1,3 @@
-#pragma warning disable CS1998
 #pragma warning disable IDE1006
 
 using System.IO.Compression;
@@ -44,7 +43,7 @@ public sealed class CompressionHttpMessageHandlerTests
 
         httpRequestMessage.Content = new StringContent("Hello World!");
 
-        httpClient.Send(httpRequestMessage);
+        await httpClient.SendAsync(httpRequestMessage);
     }
 
     [TestMethod]
@@ -79,7 +78,7 @@ public sealed class CompressionHttpMessageHandlerTests
 
         httpRequestMessage.Content = new StringContent("Hello World!");
 
-        httpClient.Send(httpRequestMessage);
+        await httpClient.SendAsync(httpRequestMessage);
     }
 
     [TestMethod]
@@ -117,7 +116,7 @@ public sealed class CompressionHttpMessageHandlerTests
 
         httpRequestMessage.Content = new StringContent("Hello World!");
 
-        httpClient.Send(httpRequestMessage);
+        await httpClient.SendAsync(httpRequestMessage);
     }
 
     [TestMethod]
@@ -155,7 +154,40 @@ public sealed class CompressionHttpMessageHandlerTests
 
         httpRequestMessage.Content = new StringContent("Hello World!");
 
-        httpClient.Send(httpRequestMessage);
+        await httpClient.SendAsync(httpRequestMessage);
+    }
+
+    [TestMethod]
+    public async Task HandlerWhenCreatedDirectly()
+    {
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
+        {
+            Assert.IsNotNull(request);
+            Assert.IsNotNull(request.Content);
+
+            var stream = await request.Content.ReadAsStreamAsync();
+            var message = AsBrotliEncodedString(stream);
+
+            Assert.AreEqual("Hello World!", message);
+            Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
+            Assert.AreEqual(null, request.Content.Headers.ContentLength);
+
+            return new();
+        }
+
+        var compressionProvider = new BrotliCompressionProvider();
+        var compressionLevel = CompressionLevel.Fastest;
+
+        var httpHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel);
+
+        httpHandler.InnerHandler = new TestPrimaryHandler(PrimaryHandler);
+
+        var httpClient = new HttpClient(httpHandler);
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+
+        httpRequestMessage.Content = new StringContent("Hello World!");
+
+        await httpClient.SendAsync(httpRequestMessage);
     }
 
     private static string AsBrotliEncodedString(Stream inputStream)
