@@ -158,7 +158,7 @@ public sealed class CompressionHttpMessageHandlerTests
     }
 
     [TestMethod]
-    public async Task HandlerWhenCreatedDirectly()
+    public async Task HandlerWithoutServiceProvider()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
@@ -175,12 +175,18 @@ public sealed class CompressionHttpMessageHandlerTests
             return new();
         }
 
-        var compressionProvider = new BrotliCompressionProvider();
+        var compressionOptions = new RequestCompressionOptions();
+
+        compressionOptions.Providers.Add<BrotliCompressionProvider>();
+
+        var compressionProviderRegistry = new RequestCompressionProviderRegistry(Options.Create(compressionOptions));
+        var compressionProvider = compressionProviderRegistry.GetProvider("br");
         var compressionLevel = CompressionLevel.Fastest;
 
-        var httpHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel);
-
-        httpHandler.InnerHandler = new TestPrimaryHandler(PrimaryHandler);
+        var httpHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel)
+        {
+            InnerHandler = new TestPrimaryHandler(PrimaryHandler),
+        };
 
         var httpClient = new HttpClient(httpHandler);
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
