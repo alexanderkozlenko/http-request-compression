@@ -5,12 +5,13 @@
   </PropertyGroup>
   <PropertyGroup>
     <Features>$(Features);strict;nullablePublicOnly;</Features>
-    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisMode>Minimum</AnalysisMode>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <AnalysisMode>Minimum</AnalysisMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
