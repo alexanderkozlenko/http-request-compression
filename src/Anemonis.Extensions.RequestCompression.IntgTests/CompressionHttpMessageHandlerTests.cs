@@ -1,6 +1,8 @@
 #pragma warning disable IDE1006
 
 using System.IO.Compression;
+using System.Net.Http.Json;
+using System.Net.Mime;
 using Anemonis.Extensions.RequestCompression.IntgTests.TestStubs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -22,9 +24,9 @@ public sealed class CompressionHttpMessageHandlerTests
             var stream = await request.Content.ReadAsStreamAsync();
             var message = AsBrotliEncodedString(stream);
 
-            Assert.AreEqual("Hello World!", message);
+            Assert.AreEqual("\"Hello World!\"", message);
             Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.AreEqual(null, request.Content.Headers.ContentLength);
+            Assert.IsNull(request.Content.Headers.ContentLength);
 
             return new();
         }
@@ -41,7 +43,7 @@ public sealed class CompressionHttpMessageHandlerTests
         var httpClient = serviceProvider.GetRequiredService<HttpClient>();
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
-        httpRequestMessage.Content = new StringContent("Hello World!");
+        httpRequestMessage.Content = JsonContent.Create("Hello World!");
 
         await httpClient.SendAsync(httpRequestMessage);
     }
@@ -57,9 +59,9 @@ public sealed class CompressionHttpMessageHandlerTests
             var stream = await request.Content.ReadAsStreamAsync();
             var message = AsBrotliEncodedString(stream);
 
-            Assert.AreEqual("Hello World!", message);
+            Assert.AreEqual("\"Hello World!\"", message);
             Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.AreEqual(null, request.Content.Headers.ContentLength);
+            Assert.IsNull(request.Content.Headers.ContentLength);
 
             return new();
         }
@@ -76,7 +78,41 @@ public sealed class CompressionHttpMessageHandlerTests
         var httpClient = serviceProvider.GetRequiredService<HttpClient>();
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
-        httpRequestMessage.Content = new StringContent("Hello World!");
+        httpRequestMessage.Content = JsonContent.Create("Hello World!");
+
+        await httpClient.SendAsync(httpRequestMessage);
+    }
+
+    [TestMethod]
+    public async Task HandlerWithDefaultRegistrationsAndSpecificMediaType()
+    {
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
+        {
+            Assert.IsNotNull(request);
+            Assert.IsNotNull(request.Content);
+
+            var message = await request.Content.ReadAsStringAsync();
+
+            Assert.AreEqual("\"Hello World!\"", message);
+            Assert.AreEqual(0, request.Content.Headers.ContentEncoding.Count);
+            Assert.IsNotNull(request.Content.Headers.ContentLength);
+
+            return new();
+        }
+
+        var serviceCollection = new ServiceCollection()
+            .AddRequestCompression();
+
+        serviceCollection
+            .AddHttpClient(Options.DefaultName)
+            .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
+            .AddRequestCompressionHandler("br");
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var httpClient = serviceProvider.GetRequiredService<HttpClient>();
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+
+        httpRequestMessage.Content = JsonContent.Create("Hello World!", new("application/json+identity"));
 
         await httpClient.SendAsync(httpRequestMessage);
     }
@@ -92,9 +128,9 @@ public sealed class CompressionHttpMessageHandlerTests
             var stream = await request.Content.ReadAsStreamAsync();
             var message = AsBrotliEncodedString(stream);
 
-            Assert.AreEqual("Hello World!", message);
+            Assert.AreEqual("\"Hello World!\"", message);
             Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.AreEqual(null, request.Content.Headers.ContentLength);
+            Assert.IsNull(request.Content.Headers.ContentLength);
 
             return new();
         }
@@ -114,7 +150,7 @@ public sealed class CompressionHttpMessageHandlerTests
         var httpClient = serviceProvider.GetRequiredService<HttpClient>();
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
-        httpRequestMessage.Content = new StringContent("Hello World!");
+        httpRequestMessage.Content = JsonContent.Create("Hello World!");
 
         await httpClient.SendAsync(httpRequestMessage);
     }
@@ -130,9 +166,9 @@ public sealed class CompressionHttpMessageHandlerTests
             var stream = await request.Content.ReadAsStreamAsync();
             var message = AsBrotliEncodedString(stream);
 
-            Assert.AreEqual("Hello World!", message);
+            Assert.AreEqual("\"Hello World!\"", message);
             Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.AreEqual(null, request.Content.Headers.ContentLength);
+            Assert.IsNull(request.Content.Headers.ContentLength);
 
             return new();
         }
@@ -152,7 +188,44 @@ public sealed class CompressionHttpMessageHandlerTests
         var httpClient = serviceProvider.GetRequiredService<HttpClient>();
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
-        httpRequestMessage.Content = new StringContent("Hello World!");
+        httpRequestMessage.Content = JsonContent.Create("Hello World!");
+
+        await httpClient.SendAsync(httpRequestMessage);
+    }
+
+    [TestMethod]
+    public async Task HandlerWithSpecificRegistrationsAndSpecificMediaType()
+    {
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
+        {
+            Assert.IsNotNull(request);
+            Assert.IsNotNull(request.Content);
+
+            var message = await request.Content.ReadAsStringAsync();
+
+            Assert.AreEqual("\"Hello World!\"", message);
+            Assert.AreEqual(0, request.Content.Headers.ContentEncoding.Count);
+            Assert.IsNotNull(request.Content.Headers.ContentLength);
+
+            return new();
+        }
+
+        var serviceCollection = new ServiceCollection()
+            .AddRequestCompression(options =>
+            {
+                options.Providers.Add<BrotliCompressionProvider>();
+            });
+
+        serviceCollection
+            .AddHttpClient(Options.DefaultName)
+            .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
+            .AddRequestCompressionHandler("br", default, new[] { "application/json+identity" });
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var httpClient = serviceProvider.GetRequiredService<HttpClient>();
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+
+        httpRequestMessage.Content = JsonContent.Create("Hello World!", new("application/json"));
 
         await httpClient.SendAsync(httpRequestMessage);
     }
@@ -168,9 +241,9 @@ public sealed class CompressionHttpMessageHandlerTests
             var stream = await request.Content.ReadAsStreamAsync();
             var message = AsBrotliEncodedString(stream);
 
-            Assert.AreEqual("Hello World!", message);
+            Assert.AreEqual("\"Hello World!\"", message);
             Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.AreEqual(null, request.Content.Headers.ContentLength);
+            Assert.IsNull(request.Content.Headers.ContentLength);
 
             return new();
         }
@@ -182,16 +255,17 @@ public sealed class CompressionHttpMessageHandlerTests
         var compressionProviderRegistry = new RequestCompressionProviderRegistry(Options.Create(compressionOptions));
         var compressionProvider = compressionProviderRegistry.GetProvider("br");
         var compressionLevel = CompressionLevel.Fastest;
+        var mediaTypes = new[] { MediaTypeNames.Application.Json };
 
-        var httpHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel)
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes)
         {
             InnerHandler = new TestPrimaryHandler(PrimaryHandler),
         };
 
-        var httpClient = new HttpClient(httpHandler);
+        var httpClient = new HttpClient(httpMessageHandler);
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
-        httpRequestMessage.Content = new StringContent("Hello World!");
+        httpRequestMessage.Content = JsonContent.Create("Hello World!");
 
         await httpClient.SendAsync(httpRequestMessage);
     }

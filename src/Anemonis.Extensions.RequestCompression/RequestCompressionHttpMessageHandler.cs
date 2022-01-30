@@ -10,18 +10,23 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 {
     private readonly IRequestCompressionProvider _compressionProvider;
     private readonly CompressionLevel _compressionLevel;
+    private readonly IEnumerable<string> _mimeTypes;
 
-    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel)
+    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel, IEnumerable<string> mimeTypes)
     {
         _compressionProvider = compressionProvider;
         _compressionLevel = compressionLevel;
+        _mimeTypes = mimeTypes;
     }
 
     protected sealed override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         if (request?.Content is { } originalContent)
         {
-            request.Content = CreateCompressionStreamContent(originalContent);
+            if (_mimeTypes.Contains(originalContent.Headers.ContentType?.MediaType!))
+            {
+                request.Content = CreateCompressionStreamContent(originalContent);
+            }
         }
 
         return base.Send(request!, cancellationToken);
@@ -31,7 +36,10 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     {
         if (request?.Content is { } originalContent)
         {
-            request.Content = CreateCompressionStreamContent(originalContent);
+            if (_mimeTypes.Contains(originalContent.Headers.ContentType?.MediaType!))
+            {
+                request.Content = CreateCompressionStreamContent(originalContent);
+            }
         }
 
         return base.SendAsync(request!, cancellationToken);

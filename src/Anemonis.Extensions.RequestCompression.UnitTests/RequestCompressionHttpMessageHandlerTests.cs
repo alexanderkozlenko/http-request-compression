@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS1998
 #pragma warning disable IDE1006
 
+using System.Text;
 using Anemonis.Extensions.RequestCompression.UnitTests.TestStubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,11 +21,12 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
-        var handler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default);
-        var adapter = new TestDelegatingHandler(handler, BedrockHandler);
-        var request = new HttpRequestMessage();
+        var mediaTypes = Array.Empty<string>();
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
+        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
+        var httpRequestMessage = new HttpRequestMessage();
 
-        adapter.Send(request, default);
+        httpMessageHandlerAdapter.Send(httpRequestMessage, default);
     }
 
     [TestMethod]
@@ -40,17 +42,49 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             Assert.AreEqual("e1m", message);
             Assert.AreEqual(2, request.Content.Headers.ContentEncoding.Count);
             Assert.AreEqual("e1", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.AreEqual(null, request.Content.Headers.ContentLength);
+            Assert.IsNull(request.Content.Headers.ContentLength);
             Assert.AreEqual(DateTimeOffset.UnixEpoch, request.Content.Headers.LastModified);
 
             return new();
         }
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default);
+        var mediaTypes = new[] { "text/plain" };
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
-        httpRequestMessage.Content = new StringContent("m");
+        httpRequestMessage.Content = new StringContent("m", Encoding.UTF8, null);
+        httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
+        httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
+
+        httpMessageHandlerAdapter.Send(httpRequestMessage, default);
+    }
+
+    [TestMethod]
+    public void SendWhenContentIsNotNullAndMediaTypeIsExcluded()
+    {
+        static async Task<HttpResponseMessage> BedrockHandler(HttpRequestMessage request)
+        {
+            Assert.IsNotNull(request);
+            Assert.IsNotNull(request.Content);
+
+            var message = await request.Content.ReadAsStringAsync();
+
+            Assert.AreEqual("m", message);
+            Assert.AreEqual(1, request.Content.Headers.ContentEncoding.Count);
+            Assert.AreEqual("identity", request.Content.Headers.ContentEncoding.LastOrDefault());
+            Assert.IsNotNull(request.Content.Headers.ContentLength);
+            Assert.AreEqual(DateTimeOffset.UnixEpoch, request.Content.Headers.LastModified);
+
+            return new();
+        }
+
+        var mediaTypes = new[] { "application/json" };
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
+        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
+        var httpRequestMessage = new HttpRequestMessage();
+
+        httpRequestMessage.Content = new StringContent("m", Encoding.UTF8, null);
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
 
@@ -68,7 +102,8 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default);
+        var mediaTypes = Array.Empty<string>();
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -88,13 +123,45 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             Assert.AreEqual("e1m", message);
             Assert.AreEqual(2, request.Content.Headers.ContentEncoding.Count);
             Assert.AreEqual("e1", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.AreEqual(null, request.Content.Headers.ContentLength);
+            Assert.IsNull(request.Content.Headers.ContentLength);
             Assert.AreEqual(DateTimeOffset.UnixEpoch, request.Content.Headers.LastModified);
 
             return new();
         }
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default);
+        var mediaTypes = new[] { "text/plain" };
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
+        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
+        var httpRequestMessage = new HttpRequestMessage();
+
+        httpRequestMessage.Content = new StringContent("m");
+        httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
+        httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
+
+        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+    }
+
+    [TestMethod]
+    public async Task SendAsyncWhenContentIsNotNullAndMediaTypeIsExcluded()
+    {
+        static async Task<HttpResponseMessage> BedrockHandler(HttpRequestMessage request)
+        {
+            Assert.IsNotNull(request);
+            Assert.IsNotNull(request.Content);
+
+            var message = await request.Content.ReadAsStringAsync();
+
+            Assert.AreEqual("m", message);
+            Assert.AreEqual(1, request.Content.Headers.ContentEncoding.Count);
+            Assert.AreEqual("identity", request.Content.Headers.ContentEncoding.LastOrDefault());
+            Assert.IsNotNull(request.Content.Headers.ContentLength);
+            Assert.AreEqual(DateTimeOffset.UnixEpoch, request.Content.Headers.LastModified);
+
+            return new();
+        }
+
+        var mediaTypes = new[] { "application/json" };
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
