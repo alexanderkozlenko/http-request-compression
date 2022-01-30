@@ -4,6 +4,7 @@
 #pragma warning disable CS1591
 #pragma warning disable IDE0130
 
+using System.Net.Mime;
 using Anemonis.Extensions.RequestCompression;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -19,7 +20,7 @@ public static class RequestCompressionServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddSingleton<RequestCompressionProviderRegistry>();
-        services.PostConfigureAll<RequestCompressionOptions>(PostConfigure);
+        services.Configure<RequestCompressionOptions>(Configure);
 
         return services;
     }
@@ -34,21 +35,17 @@ public static class RequestCompressionServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configureOptions);
 
         services.TryAddSingleton<RequestCompressionProviderRegistry>();
+        services.Configure<RequestCompressionOptions>(Configure);
         services.Configure(configureOptions);
 
         return services;
     }
 
-    private static void PostConfigure(RequestCompressionOptions options)
+    private static void Configure(RequestCompressionOptions options)
     {
-        var providers = options.Providers;
-
-        if (providers.Count == 0)
-        {
-            providers.EnsureCapacity(2);
-
-            providers.Add<BrotliCompressionProvider>();
-            providers.Add<GzipCompressionProvider>();
-        }
+        options.Providers.Add<BrotliCompressionProvider>();
+        options.Providers.Add<GzipCompressionProvider>();
+        options.DefaultMimeTypes.Add(MediaTypeNames.Application.Xml);
+        options.DefaultMimeTypes.Add(MediaTypeNames.Application.Json);
     }
 }

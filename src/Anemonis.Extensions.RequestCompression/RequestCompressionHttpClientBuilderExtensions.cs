@@ -6,6 +6,7 @@
 
 using System.IO.Compression;
 using Anemonis.Extensions.RequestCompression;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -16,27 +17,31 @@ public static class RequestCompressionHttpClientBuilderExtensions
     /// <param name="compressionLevel">The level of compression for the defined format, if applicable.</param>
     /// <param name="mimeTypes">The collection of Content-Type MIME types to compress.</param>
     /// <returns>The current <see cref="IHttpClientBuilder" /> instance.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="builder" /> or <paramref name="encodingName" /> is <see langword="null" />.</exception>
-    public static IHttpClientBuilder AddRequestCompressionHandler(this IHttpClientBuilder builder, string encodingName = "br", CompressionLevel compressionLevel = CompressionLevel.Fastest, IEnumerable<string>? mimeTypes = null)
+    /// <exception cref="ArgumentNullException"><paramref name="builder" /> is <see langword="null" />.</exception>
+    public static IHttpClientBuilder AddRequestCompressionHandler(this IHttpClientBuilder builder, string? encodingName = null, CompressionLevel? compressionLevel = null, IEnumerable<string>? mimeTypes = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(encodingName);
 
-        if (mimeTypes is null)
-        {
-            mimeTypes = RequestCompressionDefaults.MimeTypes;
-        }
-        else
+        if (mimeTypes is not null)
         {
             mimeTypes = new HashSet<string>(mimeTypes, StringComparer.OrdinalIgnoreCase);
         }
 
         DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
         {
+            var compressionOptions = services.GetRequiredService<IOptions<RequestCompressionOptions>>().Value;
+
+            encodingName ??= compressionOptions.DefaultEncodingName;
+            encodingName ??= "br";
+
             var compressionProviderRegistry = services.GetRequiredService<RequestCompressionProviderRegistry>();
             var compressionProvider = compressionProviderRegistry.GetProvider(encodingName);
 
-            return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mimeTypes);
+            compressionLevel ??= compressionOptions.DefaultCompressionLevel;
+            compressionLevel ??= CompressionLevel.Fastest;
+            mimeTypes ??= compressionOptions.DefaultMimeTypes;
+
+            return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel.Value, mimeTypes);
         }
 
         builder.AddHttpMessageHandler(CreateHttpMessageHandler);

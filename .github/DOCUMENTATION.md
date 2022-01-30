@@ -1,20 +1,14 @@
 ## Project Details
 
-Primary HTTP client handler features:
+The default set of Content-Encoding HTTP content codings supported:
+- `br` - Brotli compressed data format
+- `gzip` - GZIP file format
 
-- The handler supports requests with chained encodings.
-- The handler supports custom encoding providers for any encoding.
+The default compression format is Brotli with fastest compression level.
 
-When added with default providers, a handler can be added for these encodings:
-
-| Encoding Token | Encoding Description |
-| --- | --- |
-| `br` | Brotli compressed data format |
-| `gzip` | GZIP file format |
-
-The handler specifies a default set of MIME types for compression:
-- `application/xml`
-- `application/json`
+The default set of Content-Type MIME types to compress:
+- `application/xml` - XML file format
+- `application/json` - JSON file format
 
 ## Code Examples
 
@@ -23,7 +17,7 @@ services
     .AddRequestCompression();
 
 services
-    .AddHttpClient<IMyService, MyService>()
+    .AddHttpClient(Options.DefaultName)
     .AddRequestCompressionHandler();
 ```
 ```cs
@@ -31,14 +25,35 @@ services
     .AddRequestCompression();
 
 services
-    .AddHttpClient<IMyService, MyService>()
-    .AddRequestCompressionHandler("gzip", CompressionLevel.SmallestSize);
+    .AddHttpClient(Options.DefaultName)
+    .AddRequestCompressionHandler("gzip");
 ```
 ```cs
 services
     .AddRequestCompression();
 
 services
-    .AddHttpClient<IMyService, MyService>()
-    .AddRequestCompressionHandler("gzip", CompressionLevel.SmallestSize, new[] { "text/plain" });
+    .AddHttpClient(Options.DefaultName)
+    .AddRequestCompressionHandler("gzip", CompressionLevel.Optimal);
+```
+```cs
+services
+    .AddRequestCompression();
+
+services
+    .AddHttpClient(Options.DefaultName)
+    .AddRequestCompressionHandler("gzip", CompressionLevel.Optimal, new[] { "text/plain" });
+```
+```cs
+services
+    .AddRequestCompression(options =>
+    {
+        options.DefaultEncodingName = "gzip";
+        options.DefaultCompressionLevel = CompressionLevel.Optimal;
+        options.DefaultMimeTypes.Add("text/plain");
+    });
+
+services
+    .AddHttpClient(Options.DefaultName)
+    .AddRequestCompressionHandler();
 ```

@@ -14,7 +14,7 @@ namespace Anemonis.Extensions.RequestCompression.IntgTests;
 public sealed class CompressionHttpMessageHandlerTests
 {
     [TestMethod]
-    public async Task HandlerWithDefaultRegistrationsAndDefaultProvider()
+    public async Task HandlerWithServiceProviderAndDefaultOptions()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
@@ -49,76 +49,7 @@ public sealed class CompressionHttpMessageHandlerTests
     }
 
     [TestMethod]
-    public async Task HandlerWithDefaultRegistrationsAndSpecificProvider()
-    {
-        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
-        {
-            Assert.IsNotNull(request);
-            Assert.IsNotNull(request.Content);
-
-            var stream = await request.Content.ReadAsStreamAsync();
-            var message = AsBrotliEncodedString(stream);
-
-            Assert.AreEqual("\"Hello World!\"", message);
-            Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.IsNull(request.Content.Headers.ContentLength);
-
-            return new();
-        }
-
-        var serviceCollection = new ServiceCollection()
-            .AddRequestCompression();
-
-        serviceCollection
-            .AddHttpClient(Options.DefaultName)
-            .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
-            .AddRequestCompressionHandler("br");
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        var httpClient = serviceProvider.GetRequiredService<HttpClient>();
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
-
-        httpRequestMessage.Content = JsonContent.Create("Hello World!");
-
-        await httpClient.SendAsync(httpRequestMessage);
-    }
-
-    [TestMethod]
-    public async Task HandlerWithDefaultRegistrationsAndSpecificMediaType()
-    {
-        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
-        {
-            Assert.IsNotNull(request);
-            Assert.IsNotNull(request.Content);
-
-            var message = await request.Content.ReadAsStringAsync();
-
-            Assert.AreEqual("\"Hello World!\"", message);
-            Assert.AreEqual(0, request.Content.Headers.ContentEncoding.Count);
-            Assert.IsNotNull(request.Content.Headers.ContentLength);
-
-            return new();
-        }
-
-        var serviceCollection = new ServiceCollection()
-            .AddRequestCompression();
-
-        serviceCollection
-            .AddHttpClient(Options.DefaultName)
-            .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
-            .AddRequestCompressionHandler("br");
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        var httpClient = serviceProvider.GetRequiredService<HttpClient>();
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
-
-        httpRequestMessage.Content = JsonContent.Create("Hello World!", new("application/json+identity"));
-
-        await httpClient.SendAsync(httpRequestMessage);
-    }
-
-    [TestMethod]
-    public async Task HandlerWithSpecificRegistrationsAndDefaultProvider()
+    public async Task HandlerWithServiceProviderAndSpecificOptions()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
@@ -138,94 +69,24 @@ public sealed class CompressionHttpMessageHandlerTests
         var serviceCollection = new ServiceCollection()
             .AddRequestCompression(options =>
             {
+                options.Providers.Clear();
                 options.Providers.Add<BrotliCompressionProvider>();
+                options.DefaultEncodingName = "identity";
+                options.DefaultCompressionLevel = CompressionLevel.SmallestSize;
+                options.DefaultMimeTypes.Clear();
+                options.DefaultMimeTypes.Add(MediaTypeNames.Application.Octet);
             });
 
         serviceCollection
             .AddHttpClient(Options.DefaultName)
             .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
-            .AddRequestCompressionHandler();
+            .AddRequestCompressionHandler("br", CompressionLevel.Optimal, new[] { MediaTypeNames.Application.Json });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var httpClient = serviceProvider.GetRequiredService<HttpClient>();
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         httpRequestMessage.Content = JsonContent.Create("Hello World!");
-
-        await httpClient.SendAsync(httpRequestMessage);
-    }
-
-    [TestMethod]
-    public async Task HandlerWithSpecificRegistrationsAndSpecificProvider()
-    {
-        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
-        {
-            Assert.IsNotNull(request);
-            Assert.IsNotNull(request.Content);
-
-            var stream = await request.Content.ReadAsStreamAsync();
-            var message = AsBrotliEncodedString(stream);
-
-            Assert.AreEqual("\"Hello World!\"", message);
-            Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.IsNull(request.Content.Headers.ContentLength);
-
-            return new();
-        }
-
-        var serviceCollection = new ServiceCollection()
-            .AddRequestCompression(options =>
-            {
-                options.Providers.Add<BrotliCompressionProvider>();
-            });
-
-        serviceCollection
-            .AddHttpClient(Options.DefaultName)
-            .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
-            .AddRequestCompressionHandler("br", CompressionLevel.SmallestSize);
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        var httpClient = serviceProvider.GetRequiredService<HttpClient>();
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
-
-        httpRequestMessage.Content = JsonContent.Create("Hello World!");
-
-        await httpClient.SendAsync(httpRequestMessage);
-    }
-
-    [TestMethod]
-    public async Task HandlerWithSpecificRegistrationsAndSpecificMediaType()
-    {
-        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
-        {
-            Assert.IsNotNull(request);
-            Assert.IsNotNull(request.Content);
-
-            var message = await request.Content.ReadAsStringAsync();
-
-            Assert.AreEqual("\"Hello World!\"", message);
-            Assert.AreEqual(0, request.Content.Headers.ContentEncoding.Count);
-            Assert.IsNotNull(request.Content.Headers.ContentLength);
-
-            return new();
-        }
-
-        var serviceCollection = new ServiceCollection()
-            .AddRequestCompression(options =>
-            {
-                options.Providers.Add<BrotliCompressionProvider>();
-            });
-
-        serviceCollection
-            .AddHttpClient(Options.DefaultName)
-            .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
-            .AddRequestCompressionHandler("br", default, new[] { "application/json+identity" });
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        var httpClient = serviceProvider.GetRequiredService<HttpClient>();
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
-
-        httpRequestMessage.Content = JsonContent.Create("Hello World!", new("application/json"));
 
         await httpClient.SendAsync(httpRequestMessage);
     }

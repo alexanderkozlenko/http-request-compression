@@ -52,11 +52,6 @@ public sealed class RequestCompressionProviderCollection : ICollection<Type>
         _items.CopyTo(array, arrayIndex);
     }
 
-    internal void EnsureCapacity(int capacity)
-    {
-        _items.EnsureCapacity(capacity);
-    }
-
     public HashSet<Type>.Enumerator GetEnumerator()
     {
         return _items.GetEnumerator();
