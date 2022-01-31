@@ -26,7 +26,9 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     {
         if (request?.Content is { } originalContent)
         {
-            if (_mimeTypes.Contains(originalContent.Headers.ContentType?.MediaType!))
+            var mimeType = originalContent.Headers.ContentType?.MediaType;
+
+            if (_mimeTypes.Contains(mimeType!))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
                 _logger?.AddingCompression(_compressionProvider.EncodingName);
@@ -40,7 +42,9 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     {
         if (request?.Content is { } originalContent)
         {
-            if (_mimeTypes.Contains(originalContent.Headers.ContentType?.MediaType!))
+            var mimeType = originalContent.Headers.ContentType?.MediaType;
+
+            if (_mimeTypes.Contains(mimeType!))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
                 _logger?.AddingCompression(_compressionProvider.EncodingName);
@@ -54,9 +58,9 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     {
         var compressionContent = new CompressionStreamContent(originalContent, _compressionProvider, _compressionLevel);
 
-        foreach (var (name, values) in originalContent.Headers.NonValidated)
+        foreach (var (headerName, headerValues) in originalContent.Headers.NonValidated)
         {
-            compressionContent.Headers.TryAddWithoutValidation(name, values);
+            compressionContent.Headers.TryAddWithoutValidation(headerName, headerValues);
         }
 
         compressionContent.Headers.ContentEncoding.Add(_compressionProvider.EncodingName);
