@@ -34,7 +34,7 @@ services
 
 services
     .AddHttpClient(Options.DefaultName)
-    .AddRequestCompressionHandler("gzip", CompressionLevel.Optimal);
+    .AddRequestCompressionHandler("gzip", compressionLevel: CompressionLevel.Optimal);
 ```
 ```cs
 services
@@ -42,7 +42,7 @@ services
 
 services
     .AddHttpClient(Options.DefaultName)
-    .AddRequestCompressionHandler("gzip", CompressionLevel.Optimal, new[] { "text/plain" });
+    .AddRequestCompressionHandler("gzip", mimeTypes: new[] { "text/plain" });
 ```
 ```cs
 services
