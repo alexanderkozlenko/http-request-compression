@@ -29,7 +29,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             if (_mimeTypes.Contains(originalContent.Headers.ContentType?.MediaType!))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
-                _logger?.CompressWith(_compressionProvider.EncodingName);
+                _logger?.AddingCompression(_compressionProvider.EncodingName);
             }
         }
 
@@ -43,7 +43,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             if (_mimeTypes.Contains(originalContent.Headers.ContentType?.MediaType!))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
-                _logger?.CompressWith(_compressionProvider.EncodingName);
+                _logger?.AddingCompression(_compressionProvider.EncodingName);
             }
         }
 

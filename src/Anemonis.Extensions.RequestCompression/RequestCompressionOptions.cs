@@ -11,7 +11,7 @@ public sealed class RequestCompressionOptions
     public RequestCompressionOptions()
     {
         Providers = new();
-        DefaultMimeTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        DefaultMimeTypes = new();
     }
 
     public RequestCompressionProviderCollection Providers
@@ -34,7 +34,7 @@ public sealed class RequestCompressionOptions
     }
 
     /// <summary>Gets the collection of default Content-Type MIME types to compress.</summary>
-    public ICollection<string> DefaultMimeTypes
+    public RequestCompressionMimeTypeCollection DefaultMimeTypes
     {
         get;
     }

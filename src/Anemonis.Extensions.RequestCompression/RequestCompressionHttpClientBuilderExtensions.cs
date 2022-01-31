@@ -25,7 +25,7 @@ public static class RequestCompressionHttpClientBuilderExtensions
 
         if (mimeTypes is not null)
         {
-            mimeTypes = new HashSet<string>(mimeTypes, StringComparer.OrdinalIgnoreCase);
+            mimeTypes = new RequestCompressionMimeTypeCollection(mimeTypes);
         }
 
         DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
