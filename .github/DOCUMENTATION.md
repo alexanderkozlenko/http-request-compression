@@ -10,6 +10,8 @@ The default set of Content-Type MIME types to compress:
 - `application/xml` - XML file format
 - `application/json` - JSON file format
 
+The handler can be used in a tandem with the [ASP.NET Core request decompression middleware](https://github.com/alexanderkozlenko/aspnetcore-request-decompression).
+
 ## Code Examples
 
 ```cs
