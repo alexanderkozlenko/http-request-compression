@@ -2,10 +2,10 @@
 
 internal sealed class TestDelegatingHandler : DelegatingHandler
 {
-    public TestDelegatingHandler(DelegatingHandler targetHandler, Func<HttpRequestMessage, Task<HttpResponseMessage>> bedrockHandler)
+    public TestDelegatingHandler(DelegatingHandler targetHandler, Func<HttpRequestMessage, Task<HttpResponseMessage>> primaryHandler)
         : base(targetHandler)
     {
-        targetHandler.InnerHandler = new TestPrimaryHandler(bedrockHandler);
+        targetHandler.InnerHandler = new TestPrimaryHandler(primaryHandler);
     }
 
     public new HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)

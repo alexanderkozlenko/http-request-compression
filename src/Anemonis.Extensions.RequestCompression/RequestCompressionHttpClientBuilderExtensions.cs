@@ -6,6 +6,7 @@
 
 using System.IO.Compression;
 using Anemonis.Extensions.RequestCompression;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -41,7 +42,9 @@ public static class RequestCompressionHttpClientBuilderExtensions
             compressionLevel ??= CompressionLevel.Fastest;
             mimeTypes ??= compressionOptions.DefaultMimeTypes;
 
-            return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel.Value, mimeTypes);
+            var logger = services.GetService<ILogger<RequestCompressionHttpMessageHandler>>();
+
+            return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel.Value, mimeTypes, logger);
         }
 
         builder.AddHttpMessageHandler(CreateHttpMessageHandler);

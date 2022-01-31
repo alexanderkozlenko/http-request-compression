@@ -1,8 +1,10 @@
 ﻿#pragma warning disable CS1998
 #pragma warning disable IDE1006
 
+using System.IO.Compression;
 using System.Text;
 using Anemonis.Extensions.RequestCompression.UnitTests.TestStubs;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Anemonis.Extensions.RequestCompression.UnitTests;
@@ -13,7 +15,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
     [TestMethod]
     public void SendWhenContentIsNull()
     {
-        static async Task<HttpResponseMessage> BedrockHandler(HttpRequestMessage request)
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
             Assert.IsNotNull(request);
             Assert.IsNull(request.Content);
@@ -21,9 +23,12 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
+        var compressionProvider = new TestCompressionProvider();
+        var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = Array.Empty<string>();
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
-        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
+        var logger = default(ILogger);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
+        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
         httpMessageHandlerAdapter.Send(httpRequestMessage, default);
@@ -32,7 +37,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
     [TestMethod]
     public void SendWhenContentIsNotNull()
     {
-        static async Task<HttpResponseMessage> BedrockHandler(HttpRequestMessage request)
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
             Assert.IsNotNull(request);
             Assert.IsNotNull(request.Content);
@@ -48,9 +53,12 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
+        var compressionProvider = new TestCompressionProvider();
+        var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = new[] { "text/plain" };
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
-        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
+        var logger = default(ILogger);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
+        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
         httpRequestMessage.Content = new StringContent("m", Encoding.UTF8, null);
@@ -63,7 +71,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
     [TestMethod]
     public void SendWhenContentIsNotNullAndMediaTypeIsExcluded()
     {
-        static async Task<HttpResponseMessage> BedrockHandler(HttpRequestMessage request)
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
             Assert.IsNotNull(request);
             Assert.IsNotNull(request.Content);
@@ -79,9 +87,12 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
+        var compressionProvider = new TestCompressionProvider();
+        var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = new[] { "application/json" };
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
-        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
+        var logger = default(ILogger);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
+        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
         httpRequestMessage.Content = new StringContent("m", Encoding.UTF8, null);
@@ -94,7 +105,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
     [TestMethod]
     public async Task SendAsyncWhenContentIsNull()
     {
-        static async Task<HttpResponseMessage> BedrockHandler(HttpRequestMessage request)
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
             Assert.IsNotNull(request);
             Assert.IsNull(request.Content);
@@ -102,9 +113,12 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
+        var compressionProvider = new TestCompressionProvider();
+        var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = Array.Empty<string>();
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
-        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
+        var logger = default(ILogger);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
+        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
         await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
@@ -113,7 +127,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
     [TestMethod]
     public async Task SendAsyncWhenContentIsNotNull()
     {
-        static async Task<HttpResponseMessage> BedrockHandler(HttpRequestMessage request)
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
             Assert.IsNotNull(request);
             Assert.IsNotNull(request.Content);
@@ -129,9 +143,12 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
+        var compressionProvider = new TestCompressionProvider();
+        var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = new[] { "text/plain" };
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
-        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
+        var logger = default(ILogger);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
+        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
         httpRequestMessage.Content = new StringContent("m");
@@ -144,7 +161,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
     [TestMethod]
     public async Task SendAsyncWhenContentIsNotNullAndMediaTypeIsExcluded()
     {
-        static async Task<HttpResponseMessage> BedrockHandler(HttpRequestMessage request)
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
             Assert.IsNotNull(request);
             Assert.IsNotNull(request.Content);
@@ -160,9 +177,12 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
+        var compressionProvider = new TestCompressionProvider();
+        var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = new[] { "application/json" };
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(new TestCompressionProvider(), default, mediaTypes);
-        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, BedrockHandler);
+        var logger = default(ILogger);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
+        var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
         httpRequestMessage.Content = new StringContent("m");
