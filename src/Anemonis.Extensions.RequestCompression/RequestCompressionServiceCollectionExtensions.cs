@@ -21,6 +21,7 @@ public static class RequestCompressionServiceCollectionExtensions
 
         services.TryAddSingleton<RequestCompressionProviderRegistry>();
         services.Configure<RequestCompressionOptions>(Configure);
+        services.PostConfigure<RequestCompressionOptions>(PostConfigure);
 
         return services;
     }
@@ -37,6 +38,7 @@ public static class RequestCompressionServiceCollectionExtensions
         services.TryAddSingleton<RequestCompressionProviderRegistry>();
         services.Configure<RequestCompressionOptions>(Configure);
         services.Configure(configureOptions);
+        services.PostConfigure<RequestCompressionOptions>(PostConfigure);
 
         return services;
     }
@@ -47,5 +49,10 @@ public static class RequestCompressionServiceCollectionExtensions
         options.Providers.Add<GzipCompressionProvider>();
         options.DefaultMimeTypes.Add(MediaTypeNames.Application.Xml);
         options.DefaultMimeTypes.Add(MediaTypeNames.Application.Json);
+    }
+
+    private static void PostConfigure(RequestCompressionOptions options)
+    {
+        options.DefaultMimeTypes.TrimExcess();
     }
 }

@@ -60,6 +60,11 @@ public sealed class RequestCompressionMimeTypeCollection : ICollection<string>
         return _items.Remove(item);
     }
 
+    internal void TrimExcess()
+    {
+        _items.TrimExcess();
+    }
+
     public int Count
     {
         get
