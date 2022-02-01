@@ -47,12 +47,12 @@ public static class RequestCompressionServiceCollectionExtensions
     {
         options.Providers.Add<BrotliCompressionProvider>();
         options.Providers.Add<GzipCompressionProvider>();
-        options.DefaultMimeTypes.Add(MediaTypeNames.Application.Xml);
-        options.DefaultMimeTypes.Add(MediaTypeNames.Application.Json);
+        options.DefaultMediaTypes.Add(MediaTypeNames.Application.Xml);
+        options.DefaultMediaTypes.Add(MediaTypeNames.Application.Json);
     }
 
     private static void PostConfigure(RequestCompressionOptions options)
     {
-        options.DefaultMimeTypes.TrimExcess();
+        options.DefaultMediaTypes.TrimExcess();
     }
 }

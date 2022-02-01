@@ -113,8 +113,8 @@ public sealed class CompressionHttpMessageHandlerTests
                 options.Providers.Add<BrotliCompressionProvider>();
                 options.DefaultEncodingName = "identity";
                 options.DefaultCompressionLevel = CompressionLevel.SmallestSize;
-                options.DefaultMimeTypes.Clear();
-                options.DefaultMimeTypes.Add(MediaTypeNames.Application.Octet);
+                options.DefaultMediaTypes.Clear();
+                options.DefaultMediaTypes.Add(MediaTypeNames.Application.Octet);
             });
 
         serviceCollection
@@ -157,8 +157,8 @@ public sealed class CompressionHttpMessageHandlerTests
                 options.Providers.Add<BrotliCompressionProvider>();
                 options.DefaultEncodingName = "identity";
                 options.DefaultCompressionLevel = CompressionLevel.SmallestSize;
-                options.DefaultMimeTypes.Clear();
-                options.DefaultMimeTypes.Add(MediaTypeNames.Application.Octet);
+                options.DefaultMediaTypes.Clear();
+                options.DefaultMediaTypes.Add(MediaTypeNames.Application.Octet);
             });
 
         serviceCollection

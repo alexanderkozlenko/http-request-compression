@@ -11,14 +11,14 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 {
     private readonly IRequestCompressionProvider _compressionProvider;
     private readonly CompressionLevel _compressionLevel;
-    private readonly IEnumerable<string> _mimeTypes;
+    private readonly IEnumerable<string> _mediaTypes;
     private readonly ILogger? _logger;
 
-    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel, IEnumerable<string> mimeTypes, ILogger? logger)
+    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel, IEnumerable<string> mediaTypes, ILogger? logger)
     {
         _compressionProvider = compressionProvider;
         _compressionLevel = compressionLevel;
-        _mimeTypes = mimeTypes;
+        _mediaTypes = mediaTypes;
         _logger = logger;
     }
 
@@ -26,9 +26,9 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     {
         if (request?.Content is { } originalContent)
         {
-            var mimeType = originalContent.Headers.ContentType?.MediaType;
+            var mediaType = originalContent.Headers.ContentType?.MediaType;
 
-            if (_mimeTypes.Contains(mimeType!))
+            if (_mediaTypes.Contains(mediaType!))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
                 _logger?.AddingCompression(_compressionProvider.EncodingName);
@@ -42,9 +42,9 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     {
         if (request?.Content is { } originalContent)
         {
-            var mimeType = originalContent.Headers.ContentType?.MediaType;
+            var mediaType = originalContent.Headers.ContentType?.MediaType;
 
-            if (_mimeTypes.Contains(mimeType!))
+            if (_mediaTypes.Contains(mediaType!))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
                 _logger?.AddingCompression(_compressionProvider.EncodingName);

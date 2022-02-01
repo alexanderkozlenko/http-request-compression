@@ -16,16 +16,16 @@ public static class RequestCompressionHttpClientBuilderExtensions
     /// <summary>Adds a message handler to provide request compression for a named <see cref="HttpClient" />.</summary>
     /// <param name="encodingName">The encoding token that defines a compression format.</param>
     /// <param name="compressionLevel">The level of compression for the defined format, if applicable.</param>
-    /// <param name="mimeTypes">The collection of Content-Type MIME types to compress.</param>
+    /// <param name="mediaTypes">The collection of Content-Type media types to compress.</param>
     /// <returns>The current <see cref="IHttpClientBuilder" /> instance.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="builder" /> is <see langword="null" />.</exception>
-    public static IHttpClientBuilder AddRequestCompressionHandler(this IHttpClientBuilder builder, string? encodingName = null, CompressionLevel? compressionLevel = null, IEnumerable<string>? mimeTypes = null)
+    public static IHttpClientBuilder AddRequestCompressionHandler(this IHttpClientBuilder builder, string? encodingName = null, CompressionLevel? compressionLevel = null, IEnumerable<string>? mediaTypes = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (mimeTypes is not null)
+        if (mediaTypes is not null)
         {
-            mimeTypes = new RequestCompressionMimeTypeCollection(mimeTypes);
+            mediaTypes = new RequestCompressionMediaTypeCollection(mediaTypes);
         }
 
         DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
@@ -40,11 +40,11 @@ public static class RequestCompressionHttpClientBuilderExtensions
 
             compressionLevel ??= compressionOptions.DefaultCompressionLevel;
             compressionLevel ??= CompressionLevel.Fastest;
-            mimeTypes ??= compressionOptions.DefaultMimeTypes;
+            mediaTypes ??= compressionOptions.DefaultMediaTypes;
 
             var logger = services.GetService<ILogger<RequestCompressionHttpMessageHandler>>();
 
-            return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel.Value, mimeTypes, logger);
+            return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel.Value, mediaTypes, logger);
         }
 
         builder.AddHttpMessageHandler(CreateHttpMessageHandler);

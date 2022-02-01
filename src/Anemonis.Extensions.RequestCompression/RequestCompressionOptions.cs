@@ -11,7 +11,7 @@ public sealed class RequestCompressionOptions
     public RequestCompressionOptions()
     {
         Providers = new();
-        DefaultMimeTypes = new();
+        DefaultMediaTypes = new();
     }
 
     public RequestCompressionProviderCollection Providers
@@ -33,8 +33,8 @@ public sealed class RequestCompressionOptions
         set;
     }
 
-    /// <summary>Gets the collection of default Content-Type MIME types to compress.</summary>
-    public RequestCompressionMimeTypeCollection DefaultMimeTypes
+    /// <summary>Gets the collection of default Content-Type media types to compress.</summary>
+    public RequestCompressionMediaTypeCollection DefaultMediaTypes
     {
         get;
     }

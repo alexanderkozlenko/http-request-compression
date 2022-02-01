@@ -6,16 +6,16 @@ using System.Collections;
 
 namespace Anemonis.Extensions.RequestCompression;
 
-public sealed class RequestCompressionMimeTypeCollection : ICollection<string>
+public sealed class RequestCompressionMediaTypeCollection : ICollection<string>
 {
     private readonly HashSet<string> _items;
 
-    public RequestCompressionMimeTypeCollection()
+    public RequestCompressionMediaTypeCollection()
     {
         _items = new(StringComparer.OrdinalIgnoreCase);
     }
 
-    public RequestCompressionMimeTypeCollection(IEnumerable<string> collection)
+    public RequestCompressionMediaTypeCollection(IEnumerable<string> collection)
     {
         _items = new(collection, StringComparer.OrdinalIgnoreCase);
     }
