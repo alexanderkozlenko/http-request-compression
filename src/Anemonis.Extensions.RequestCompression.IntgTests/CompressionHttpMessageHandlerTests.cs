@@ -196,20 +196,17 @@ public sealed class CompressionHttpMessageHandlerTests
 
         using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Trace).AddConsole());
 
-        var logger = loggerFactory.CreateLogger<RequestCompressionHttpMessageHandler>();
-        var compressionOptions = new RequestCompressionOptions();
+        var options = new RequestCompressionOptions();
 
-        compressionOptions.Providers.Add<BrotliCompressionProvider>();
+        options.Providers.Add<BrotliCompressionProvider>();
 
-        var compressionProviderRegistry = new RequestCompressionProviderRegistry(Options.Create(compressionOptions));
-        var compressionProvider = compressionProviderRegistry.GetProvider("br");
         var compressionLevel = CompressionLevel.Fastest;
         var mediaTypes = new[] { MediaTypeNames.Application.Json };
+        var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
+        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry, loggerFactory);
+        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("br", compressionLevel, mediaTypes);
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger)
-        {
-            InnerHandler = new TestPrimaryHandler(PrimaryHandler),
-        };
+        httpMessageHandler.InnerHandler = new TestPrimaryHandler(PrimaryHandler);
 
         var httpClient = new HttpClient(httpMessageHandler);
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
@@ -239,19 +236,17 @@ public sealed class CompressionHttpMessageHandlerTests
         using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Trace).AddConsole());
 
         var logger = loggerFactory.CreateLogger<RequestCompressionHttpMessageHandler>();
-        var compressionOptions = new RequestCompressionOptions();
+        var options = new RequestCompressionOptions();
 
-        compressionOptions.Providers.Add<BrotliCompressionProvider>();
+        options.Providers.Add<BrotliCompressionProvider>();
 
-        var compressionProviderRegistry = new RequestCompressionProviderRegistry(Options.Create(compressionOptions));
-        var compressionProvider = compressionProviderRegistry.GetProvider("br");
         var compressionLevel = CompressionLevel.Fastest;
         var mediaTypes = new[] { MediaTypeNames.Application.Json };
+        var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
+        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry, loggerFactory);
+        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("br", compressionLevel, mediaTypes);
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger)
-        {
-            InnerHandler = new TestPrimaryHandler(PrimaryHandler),
-        };
+        httpMessageHandler.InnerHandler = new TestPrimaryHandler(PrimaryHandler);
 
         var httpClient = new HttpClient(httpMessageHandler);
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");

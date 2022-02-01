@@ -19,7 +19,8 @@ public static class RequestCompressionServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddSingleton<RequestCompressionProviderRegistry>();
+        services.TryAddSingleton<IRequestCompressionProviderRegistry, RequestCompressionProviderRegistry>();
+        services.TryAddSingleton<IRequestCompressionHttpMessageHandlerFactory, RequestCompressionHttpMessageHandlerFactory>();
         services.Configure<RequestCompressionOptions>(Configure);
         services.PostConfigure<RequestCompressionOptions>(PostConfigure);
 
@@ -35,7 +36,8 @@ public static class RequestCompressionServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configureOptions);
 
-        services.TryAddSingleton<RequestCompressionProviderRegistry>();
+        services.TryAddSingleton<IRequestCompressionProviderRegistry, RequestCompressionProviderRegistry>();
+        services.TryAddSingleton<IRequestCompressionHttpMessageHandlerFactory, RequestCompressionHttpMessageHandlerFactory>();
         services.Configure<RequestCompressionOptions>(Configure);
         services.Configure(configureOptions);
         services.PostConfigure<RequestCompressionOptions>(PostConfigure);

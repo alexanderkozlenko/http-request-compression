@@ -4,7 +4,7 @@
 using System.IO.Compression;
 using System.Text;
 using Anemonis.Extensions.RequestCompression.UnitTests.TestStubs;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Anemonis.Extensions.RequestCompression.UnitTests;
@@ -26,7 +26,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = Array.Empty<string>();
-        var logger = default(ILogger);
+        var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
@@ -56,7 +56,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = new[] { "text/plain" };
-        var logger = default(ILogger);
+        var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
@@ -90,7 +90,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = new[] { "application/json" };
-        var logger = default(ILogger);
+        var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
@@ -116,7 +116,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = Array.Empty<string>();
-        var logger = default(ILogger);
+        var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
@@ -146,7 +146,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = new[] { "text/plain" };
-        var logger = default(ILogger);
+        var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
@@ -180,7 +180,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
         var mediaTypes = new[] { "application/json" };
-        var logger = default(ILogger);
+        var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();

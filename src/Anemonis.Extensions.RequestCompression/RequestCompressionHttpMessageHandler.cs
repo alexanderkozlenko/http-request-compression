@@ -12,9 +12,9 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     private readonly IRequestCompressionProvider _compressionProvider;
     private readonly CompressionLevel _compressionLevel;
     private readonly IEnumerable<string> _mediaTypes;
-    private readonly ILogger? _logger;
+    private readonly ILogger _logger;
 
-    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel, IEnumerable<string> mediaTypes, ILogger? logger)
+    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel, IEnumerable<string> mediaTypes, ILogger logger)
     {
         _compressionProvider = compressionProvider;
         _compressionLevel = compressionLevel;
@@ -31,7 +31,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             if (_mediaTypes.Contains(mediaType!))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
-                _logger?.AddingCompression(_compressionProvider.EncodingName);
+                _logger.AddingCompression(_compressionProvider.EncodingName);
             }
         }
 
@@ -47,7 +47,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             if (_mediaTypes.Contains(mediaType!))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
-                _logger?.AddingCompression(_compressionProvider.EncodingName);
+                _logger.AddingCompression(_compressionProvider.EncodingName);
             }
         }
 

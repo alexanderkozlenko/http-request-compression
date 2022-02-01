@@ -6,8 +6,6 @@
 
 using System.IO.Compression;
 using Anemonis.Extensions.RequestCompression;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -30,21 +28,9 @@ public static class RequestCompressionHttpClientBuilderExtensions
 
         DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
         {
-            var compressionOptions = services.GetRequiredService<IOptions<RequestCompressionOptions>>().Value;
+            var httpMessageHandlerFactory = services.GetRequiredService<IRequestCompressionHttpMessageHandlerFactory>();
 
-            encodingName ??= compressionOptions.DefaultEncodingName;
-            encodingName ??= "br";
-
-            var compressionProviderRegistry = services.GetRequiredService<RequestCompressionProviderRegistry>();
-            var compressionProvider = compressionProviderRegistry.GetProvider(encodingName);
-
-            compressionLevel ??= compressionOptions.DefaultCompressionLevel;
-            compressionLevel ??= CompressionLevel.Fastest;
-            mediaTypes ??= compressionOptions.DefaultMediaTypes;
-
-            var logger = services.GetService<ILogger<RequestCompressionHttpMessageHandler>>();
-
-            return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel.Value, mediaTypes, logger);
+            return httpMessageHandlerFactory.CreateHandler(encodingName, compressionLevel, mediaTypes);
         }
 
         builder.AddHttpMessageHandler(CreateHttpMessageHandler);
