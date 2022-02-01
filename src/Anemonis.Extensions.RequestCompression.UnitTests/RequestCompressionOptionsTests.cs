@@ -12,5 +12,7 @@ public sealed class RequestCompressionOptionsTests
 
         Assert.IsNotNull(options.Providers);
         Assert.AreEqual(0, options.Providers.Count);
+        Assert.IsNotNull(options.DefaultMediaTypes);
+        Assert.AreEqual(0, options.DefaultMediaTypes.Count);
     }
 }

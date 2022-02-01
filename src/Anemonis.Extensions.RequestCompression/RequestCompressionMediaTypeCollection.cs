@@ -22,6 +22,8 @@ public sealed class RequestCompressionMediaTypeCollection : ICollection<string>
 
     public void Add(string item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         _items.Add(item);
     }
 
