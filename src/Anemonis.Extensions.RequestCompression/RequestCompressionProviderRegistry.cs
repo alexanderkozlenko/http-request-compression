@@ -27,7 +27,7 @@ public sealed class RequestCompressionProviderRegistry : IRequestCompressionProv
 
         if (!providers.TryGetValue(encodingName, out var provider))
         {
-            throw new InvalidOperationException($"No matching request decompression provider found for encoding '{encodingName}'.");
+            throw new InvalidOperationException($"No matching request compression provider found for encoding '{encodingName}'.");
         }
 
         return provider;

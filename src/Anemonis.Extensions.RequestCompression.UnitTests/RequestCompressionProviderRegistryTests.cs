@@ -20,4 +20,14 @@ public sealed class RequestCompressionProviderRegistryTests
         Assert.IsNotNull(provider);
         Assert.IsInstanceOfType(provider, typeof(TestCompressionProvider));
     }
+
+    [TestMethod]
+    public void GetProviderWhenNotRegistered()
+    {
+        var options = new RequestCompressionOptions();
+        var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
+
+        Assert.ThrowsException<InvalidOperationException>(() =>
+            providerRegistry.GetProvider("e1"));
+    }
 }
