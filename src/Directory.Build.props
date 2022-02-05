@@ -22,8 +22,8 @@
   </ItemGroup>
   <PropertyGroup>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <VersionPrefix>1.2.0</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <VersionPrefix>1.2.1</VersionPrefix>
+    <VersionSuffix>preview.1</VersionSuffix>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors><![CDATA[Oleksandr Kozlenko]]></Authors>
     <Copyright><![CDATA[© Oleksandr Kozlenko. All rights reserved.]]></Copyright>
