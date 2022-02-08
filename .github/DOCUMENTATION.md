@@ -1,25 +1,17 @@
 ## Project Details
 
 - The content codings supported by default:
-  | Name | Description |
-  | :--- | --- |
-  | `br` | Brotli compressed data format |
-  | `gzip` | GZIP file format |
+  - `br` - Brotli compressed data format
+  - `gzip` - GZIP file format
 - The media types compressed by default:
-  | Name | Description |
-  | :--- | --- |
-  | `application/xml` | XML file formatt |
-  | `application/json` | JSON file format |
-- The logging events available for diagnostics:
-  | ID | Level | Description |
-  | :---: | :---: | --- |
-  | 1 | Debug | Adding compression with the specified format |
-- The default compression format is Brotli with fastest compression level.
-- Compression can be disabled/enabled per a request with extension methods for request options.
+  - `application/json`
+  - `application/xml`
+- The compression format by default is Brotli with the fastest compression level.
 - The handler can be used in a tandem with the [ASP.NET Core request decompression middleware](https://github.com/alexanderkozlenko/aspnetcore-request-decompression).
 
 ## Code Examples
 
+Default global configuration:
 ```cs
 services
     .AddRequestCompression();
@@ -28,6 +20,20 @@ services
     .AddHttpClient(Options.DefaultName)
     .AddRequestCompressionHandler();
 ```
+Custom global configuration:
+```cs
+services
+    .AddRequestCompression(options =>
+    {
+        options.DefaultEncodingName = "gzip";
+        options.DefaultMediaTypes.Add("text/plain");
+    });
+
+services
+    .AddHttpClient(Options.DefaultName)
+    .AddRequestCompressionHandler();
+```
+Custom per-client configuration:
 ```cs
 services
     .AddRequestCompression();
@@ -44,18 +50,7 @@ services
     .AddHttpClient(Options.DefaultName)
     .AddRequestCompressionHandler("gzip", mediaTypes: new[] { "text/plain" });
 ```
-```cs
-services
-    .AddRequestCompression(options =>
-    {
-        options.DefaultEncodingName = "gzip";
-        options.DefaultMediaTypes.Add("text/plain");
-    });
-
-services
-    .AddHttpClient(Options.DefaultName)
-    .AddRequestCompressionHandler();
-```
+Custom per-request configuration:
 ```cs
 request.Content = JsonContent.Create("Hello World!");
 request.SetCompressionEnabled(false);
