@@ -35,6 +35,6 @@ public sealed class RequestCompressionHttpClientBuilderExtensionsTests
 
         var result = RequestCompressionHttpClientBuilderExtensions.AddRequestCompressionHandler(builder.Object, "e", default);
 
-        Assert.IsNotNull(result);
+        Assert.AreSame(builder.Object, result);
     }
 }

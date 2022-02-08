@@ -5,7 +5,7 @@
 
 namespace Anemonis.Extensions.RequestCompression;
 
-public static class HttpRequestMessageExtensions
+public static class RequestCompressionHttpRequestMessageExtensions
 {
     /// <summary>Toggles request compression in <see cref="RequestCompressionHttpMessageHandler" /> with the highest priority.</summary>
     /// <param name="compressionEnabled"><see langword="true" /> if compression is enabled; otherwise <see langword="false" />.</param>

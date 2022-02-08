@@ -20,7 +20,7 @@ public sealed class RequestCompressionServiceCollectionExtensionsTests
         var builder = new Mock<IServiceCollection>(MockBehavior.Loose);
         var result = RequestCompressionServiceCollectionExtensions.AddRequestCompression(builder.Object);
 
-        Assert.IsNotNull(result);
+        Assert.AreSame(builder.Object, result);
     }
 
     [TestMethod]
@@ -45,6 +45,6 @@ public sealed class RequestCompressionServiceCollectionExtensionsTests
         var builder = new Mock<IServiceCollection>(MockBehavior.Loose);
         var result = RequestCompressionServiceCollectionExtensions.AddRequestCompression(builder.Object, o => { });
 
-        Assert.IsNotNull(result);
+        Assert.AreSame(builder.Object, result);
     }
 }
