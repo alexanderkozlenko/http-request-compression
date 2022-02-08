@@ -67,9 +67,9 @@ services
 ```
 ```cs
 request.Content = JsonContent.Create("Hello World!");
-request.Options.DisableCompression();
+request.SetCompressionEnabled(false);
 ```
 ```cs
 request.Content = new StringContent("Hello World!");
-request.Options.EnableCompression();
+request.SetCompressionEnabled(true);
 ```

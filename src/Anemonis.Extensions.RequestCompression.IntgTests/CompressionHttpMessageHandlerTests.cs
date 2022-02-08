@@ -119,7 +119,7 @@ public sealed class CompressionHttpMessageHandlerTests
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         httpRequestMessage.Content = JsonContent.Create("Hello World!");
-        httpRequestMessage.Options.DisableCompression();
+        httpRequestMessage.SetCompressionEnabled(false);
 
         await httpClient.SendAsync(httpRequestMessage);
     }
@@ -253,7 +253,7 @@ public sealed class CompressionHttpMessageHandlerTests
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         httpRequestMessage.Content = JsonContent.Create("Hello World!");
-        httpRequestMessage.Options.DisableCompression();
+        httpRequestMessage.SetCompressionEnabled(false);
 
         await httpClient.SendAsync(httpRequestMessage);
     }
@@ -374,7 +374,7 @@ public sealed class CompressionHttpMessageHandlerTests
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         httpRequestMessage.Content = JsonContent.Create("Hello World!");
-        httpRequestMessage.Options.DisableCompression();
+        httpRequestMessage.SetCompressionEnabled(false);
 
         await httpClient.SendAsync(httpRequestMessage);
     }
