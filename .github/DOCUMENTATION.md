@@ -42,14 +42,6 @@ services
 
 services
     .AddHttpClient(Options.DefaultName)
-    .AddRequestCompressionHandler("gzip", compressionLevel: CompressionLevel.Optimal);
-```
-```cs
-services
-    .AddRequestCompression();
-
-services
-    .AddHttpClient(Options.DefaultName)
     .AddRequestCompressionHandler("gzip", mediaTypes: new[] { "text/plain" });
 ```
 ```cs
@@ -57,7 +49,6 @@ services
     .AddRequestCompression(options =>
     {
         options.DefaultEncodingName = "gzip";
-        options.DefaultCompressionLevel = CompressionLevel.Optimal;
         options.DefaultMediaTypes.Add("text/plain");
     });
 
