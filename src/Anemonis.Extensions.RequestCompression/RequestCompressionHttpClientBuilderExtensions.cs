@@ -21,7 +21,7 @@ public static class RequestCompressionHttpClientBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (mediaTypes is not null)
+        if (mediaTypes is not null and not RequestCompressionMediaTypeCollection)
         {
             mediaTypes = new RequestCompressionMediaTypeCollection(mediaTypes);
         }
@@ -30,7 +30,7 @@ public static class RequestCompressionHttpClientBuilderExtensions
         {
             var httpMessageHandlerFactory = services.GetRequiredService<IRequestCompressionHttpMessageHandlerFactory>();
 
-            return httpMessageHandlerFactory.CreateHandler(encodingName, compressionLevel, mediaTypes);
+            return httpMessageHandlerFactory.CreateHandler(encodingName, compressionLevel, mediaTypes as RequestCompressionMediaTypeCollection);
         }
 
         builder.AddHttpMessageHandler(CreateHttpMessageHandler);

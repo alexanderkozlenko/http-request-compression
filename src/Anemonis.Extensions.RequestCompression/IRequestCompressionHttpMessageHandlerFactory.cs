@@ -8,5 +8,5 @@ namespace Anemonis.Extensions.RequestCompression;
 
 public interface IRequestCompressionHttpMessageHandlerFactory
 {
-    DelegatingHandler CreateHandler(string? encodingName, CompressionLevel? compressionLevel, IEnumerable<string>? mediaTypes);
+    DelegatingHandler CreateHandler(string? encodingName, CompressionLevel? compressionLevel, RequestCompressionMediaTypeCollection? mediaTypes);
 }

@@ -9,14 +9,14 @@ namespace Anemonis.Extensions.RequestCompression;
 
 public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 {
-    public static readonly HttpRequestOptionsKey<bool> EnableCompressionOptionsKey = new($"{typeof(RequestCompressionHttpMessageHandler).Namespace}.EnableCompression");
+    public static readonly HttpRequestOptionsKey<bool> EnableCompressionOptionKey = new($"{typeof(RequestCompressionHttpMessageHandler).Namespace}.EnableCompression");
 
     private readonly IRequestCompressionProvider _compressionProvider;
     private readonly CompressionLevel _compressionLevel;
-    private readonly IEnumerable<string> _mediaTypes;
+    private readonly RequestCompressionMediaTypeCollection _mediaTypes;
     private readonly ILogger _logger;
 
-    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel, IEnumerable<string> mediaTypes, ILogger logger)
+    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel, RequestCompressionMediaTypeCollection mediaTypes, ILogger logger)
     {
         _compressionProvider = compressionProvider;
         _compressionLevel = compressionLevel;
@@ -26,13 +26,13 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 
     protected sealed override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (request?.Content is { } originalContent)
+        if (request?.Content is { } content)
         {
-            var compress = request.Options.TryGetValue(EnableCompressionOptionsKey, out var value) ? (bool?)value : null;
+            var enableCompression = GetEnableCompressionOption(request.Options);
 
-            if (((compress is null) && _mediaTypes.Contains(originalContent.Headers.ContentType?.MediaType!)) || (compress is true))
+            if (((enableCompression is null) && HasAllowedContentType(content)) || (enableCompression is true))
             {
-                request.Content = CreateCompressionStreamContent(originalContent);
+                request.Content = CreateCompressionStreamContent(content);
 
                 _logger.AddingCompression(_compressionProvider.EncodingName);
             }
@@ -43,13 +43,13 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 
     protected sealed override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (request?.Content is { } originalContent)
+        if (request?.Content is { } content)
         {
-            var compress = request.Options.TryGetValue(EnableCompressionOptionsKey, out var value) ? (bool?)value : null;
+            var enableCompression = GetEnableCompressionOption(request.Options);
 
-            if (((compress is null) && _mediaTypes.Contains(originalContent.Headers.ContentType?.MediaType!)) || (compress is true))
+            if (((enableCompression is null) && HasAllowedContentType(content)) || (enableCompression is true))
             {
-                request.Content = CreateCompressionStreamContent(originalContent);
+                request.Content = CreateCompressionStreamContent(content);
 
                 _logger.AddingCompression(_compressionProvider.EncodingName);
             }
@@ -71,5 +71,34 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         compressionContent.Headers.ContentLength = null;
 
         return compressionContent;
+    }
+
+    private bool HasAllowedContentType(HttpContent content)
+    {
+        if (_mediaTypes.Count == 0)
+        {
+            return false;
+        }
+
+        var mediaType = content.Headers.ContentType?.MediaType;
+
+        if (mediaType is null)
+        {
+            return false;
+        }
+
+        return _mediaTypes.Contains(mediaType);
+    }
+
+    private static bool? GetEnableCompressionOption(HttpRequestOptions options)
+    {
+        if (options.TryGetValue(EnableCompressionOptionKey, out var value))
+        {
+            return value;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

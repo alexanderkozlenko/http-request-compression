@@ -24,7 +24,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = Array.Empty<string>();
+        var mediaTypes = new RequestCompressionMediaTypeCollection();
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -54,7 +54,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "text/plain" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "text/plain" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -88,7 +88,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "text/plain" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "text/plain" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -97,7 +97,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content = new StringContent("m");
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
-        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionsKey, false);
+        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionKey, false);
 
         httpMessageHandlerAdapter.Send(httpRequestMessage, default);
     }
@@ -123,7 +123,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "text/plain" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "text/plain" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -132,7 +132,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content = new StringContent("m");
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
-        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionsKey, true);
+        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionKey, true);
 
         httpMessageHandlerAdapter.Send(httpRequestMessage, default);
     }
@@ -158,7 +158,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "application/json" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "application/json" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -192,7 +192,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "application/json" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "application/json" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -201,7 +201,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content = new StringContent("m");
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
-        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionsKey, false);
+        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionKey, false);
 
         httpMessageHandlerAdapter.Send(httpRequestMessage, default);
     }
@@ -227,7 +227,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "application/json" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "application/json" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -236,7 +236,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content = new StringContent("m");
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
-        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionsKey, true);
+        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionKey, true);
 
         httpMessageHandlerAdapter.Send(httpRequestMessage, default);
     }
@@ -254,7 +254,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = Array.Empty<string>();
+        var mediaTypes = new RequestCompressionMediaTypeCollection();
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -284,7 +284,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "text/plain" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "text/plain" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -318,7 +318,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "text/plain" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "text/plain" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -327,7 +327,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content = new StringContent("m");
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
-        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionsKey, false);
+        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionKey, false);
 
         await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
     }
@@ -353,7 +353,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "text/plain" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "text/plain" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -362,7 +362,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content = new StringContent("m");
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
-        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionsKey, true);
+        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionKey, true);
 
         await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
     }
@@ -388,7 +388,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "application/json" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "application/json" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -422,7 +422,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "application/json" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "application/json" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -431,7 +431,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content = new StringContent("m");
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
-        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionsKey, false);
+        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionKey, false);
 
         await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
     }
@@ -457,7 +457,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         var compressionProvider = new TestCompressionProvider();
         var compressionLevel = CompressionLevel.Optimal;
-        var mediaTypes = new[] { "application/json" };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "application/json" });
         var logger = NullLogger.Instance;
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel, mediaTypes, logger);
         var httpMessageHandlerAdapter = new TestDelegatingHandler(httpMessageHandler, PrimaryHandler);
@@ -466,7 +466,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content = new StringContent("m");
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
-        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionsKey, true);
+        httpRequestMessage.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionKey, true);
 
         await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
     }

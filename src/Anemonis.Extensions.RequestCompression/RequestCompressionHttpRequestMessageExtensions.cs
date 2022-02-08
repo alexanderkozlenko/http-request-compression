@@ -14,6 +14,6 @@ public static class RequestCompressionHttpRequestMessageExtensions
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        request.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionsKey, compressionEnabled);
+        request.Options.Set(RequestCompressionHttpMessageHandler.EnableCompressionOptionKey, compressionEnabled);
     }
 }

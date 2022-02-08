@@ -21,7 +21,7 @@ public sealed class RequestCompressionHttpMessageHandlerFactory : IRequestCompre
         _logger = loggerFactory.CreateLogger<RequestCompressionHttpMessageHandler>();
     }
 
-    public DelegatingHandler CreateHandler(string? encodingName, CompressionLevel? compressionLevel, IEnumerable<string>? mediaTypes)
+    public DelegatingHandler CreateHandler(string? encodingName, CompressionLevel? compressionLevel, RequestCompressionMediaTypeCollection? mediaTypes)
     {
         var options = _options.Value;
 

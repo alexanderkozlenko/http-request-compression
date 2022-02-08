@@ -283,7 +283,7 @@ public sealed class CompressionHttpMessageHandlerTests
         options.Providers.Add<BrotliCompressionProvider>();
 
         var compressionLevel = CompressionLevel.Fastest;
-        var mediaTypes = new[] { MediaTypeNames.Application.Json };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { MediaTypeNames.Application.Json });
         var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
         var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry, loggerFactory);
         var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("br", compressionLevel, mediaTypes);
@@ -323,7 +323,7 @@ public sealed class CompressionHttpMessageHandlerTests
         options.Providers.Add<BrotliCompressionProvider>();
 
         var compressionLevel = CompressionLevel.Fastest;
-        var mediaTypes = new[] { MediaTypeNames.Application.Json };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { MediaTypeNames.Application.Json });
         var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
         var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry, loggerFactory);
         var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("br", compressionLevel, mediaTypes);
@@ -363,7 +363,7 @@ public sealed class CompressionHttpMessageHandlerTests
         options.Providers.Add<BrotliCompressionProvider>();
 
         var compressionLevel = CompressionLevel.Fastest;
-        var mediaTypes = new[] { MediaTypeNames.Application.Json };
+        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { MediaTypeNames.Application.Json });
         var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
         var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry, loggerFactory);
         var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("br", compressionLevel, mediaTypes);
