@@ -26,14 +26,19 @@ public sealed class RequestCompressionHttpMessageHandlerFactory : IRequestCompre
         var options = _options.Value;
 
         encodingName ??= options.DefaultEncodingName;
-        encodingName ??= "br";
+        compressionLevel ??= options.DefaultCompressionLevel;
+        mediaTypes ??= options.DefaultMediaTypes;
+
+        if (encodingName is null)
+        {
+            throw new InvalidOperationException("Encoding name is not defined");
+        }
+        if (compressionLevel is null)
+        {
+            throw new InvalidOperationException("Compression level is not defined");
+        }
 
         var compressionProvider = _compressionProviderRegistry.GetProvider(encodingName);
-
-        compressionLevel ??= options.DefaultCompressionLevel;
-        compressionLevel ??= CompressionLevel.Fastest;
-
-        mediaTypes ??= options.DefaultMediaTypes;
 
         return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel.Value, mediaTypes, _logger);
     }

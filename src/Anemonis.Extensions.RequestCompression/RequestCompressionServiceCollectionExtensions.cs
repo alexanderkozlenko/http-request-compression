@@ -4,6 +4,7 @@
 #pragma warning disable CS1591
 #pragma warning disable IDE0130
 
+using System.IO.Compression;
 using System.Net.Mime;
 using Anemonis.Extensions.RequestCompression;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -49,6 +50,8 @@ public static class RequestCompressionServiceCollectionExtensions
     {
         options.Providers.Add<BrotliCompressionProvider>();
         options.Providers.Add<GzipCompressionProvider>();
+        options.DefaultEncodingName = "br";
+        options.DefaultCompressionLevel = CompressionLevel.Fastest;
         options.DefaultMediaTypes.Add(MediaTypeNames.Application.Xml);
         options.DefaultMediaTypes.Add(MediaTypeNames.Application.Json);
     }
