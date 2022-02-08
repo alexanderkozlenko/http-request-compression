@@ -18,12 +18,6 @@
 - Compression can be disabled/enabled per a request with extension methods for request options.
 - The handler can be used in a tandem with the [ASP.NET Core request decompression middleware](https://github.com/alexanderkozlenko/aspnetcore-request-decompression).
 
-The default compression format is Brotli with fastest compression level.
-
-The default set of Content-Type media types to compress:
-- `application/xml` - XML file format
-- `application/json` - JSON file format
-
 ## Code Examples
 
 ```cs
