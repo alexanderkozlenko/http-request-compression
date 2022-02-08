@@ -1,21 +1,28 @@
 ## Project Details
 
-The default set of Content-Encoding HTTP content codings supported:
-- `br` - Brotli compressed data format
-- `gzip` - GZIP file format
+- The content codings supported by default:
+  | Name | Description |
+  | :--- | --- |
+  | `br` | Brotli compressed data format |
+  | `gzip` | GZIP file format |
+- The media types compressed by default:
+  | Name | Description |
+  | :--- | --- |
+  | `application/xml` | XML file formatt |
+  | `application/json` | JSON file format |
+- The logging events available for diagnostics:
+  | ID | Level | Description |
+  | :---: | :---: | --- |
+  | 1 | Debug | Adding compression with the specified format |
+- The default compression format is Brotli with fastest compression level.
+- Compression can be disabled/enabled per a request with extension methods for request options.
+- The handler can be used in a tandem with the [ASP.NET Core request decompression middleware](https://github.com/alexanderkozlenko/aspnetcore-request-decompression).
 
 The default compression format is Brotli with fastest compression level.
 
 The default set of Content-Type media types to compress:
 - `application/xml` - XML file format
 - `application/json` - JSON file format
-
-The set of logging events available for diagnostics:
-| Event ID | Event Level | Event Reason |
-| :---: | :---: | --- |
-| `1` | `Debug` | Adding compression with the specified format |
-
-The handler can be used in a tandem with the [ASP.NET Core request decompression middleware](https://github.com/alexanderkozlenko/aspnetcore-request-decompression).
 
 ## Code Examples
 
@@ -63,4 +70,12 @@ services
 services
     .AddHttpClient(Options.DefaultName)
     .AddRequestCompressionHandler();
+```
+```cs
+request.Content = JsonContent.Create("Hello World!");
+request.Options.DisableCompression();
+```
+```cs
+request.Content = new StringContent("Hello World!");
+request.Options.EnableCompression();
 ```

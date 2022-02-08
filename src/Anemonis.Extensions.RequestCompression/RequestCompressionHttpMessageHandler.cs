@@ -9,6 +9,8 @@ namespace Anemonis.Extensions.RequestCompression;
 
 public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 {
+    public static readonly HttpRequestOptionsKey<bool> EnableCompressionOptionsKey = new($"{typeof(RequestCompressionHttpMessageHandler).Namespace}.EnableCompression");
+
     private readonly IRequestCompressionProvider _compressionProvider;
     private readonly CompressionLevel _compressionLevel;
     private readonly IEnumerable<string> _mediaTypes;
@@ -26,11 +28,12 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     {
         if (request?.Content is { } originalContent)
         {
-            var mediaType = originalContent.Headers.ContentType?.MediaType;
+            var compress = request.Options.TryGetValue(EnableCompressionOptionsKey, out var value) ? (bool?)value : null;
 
-            if (_mediaTypes.Contains(mediaType!))
+            if (((compress is null) && _mediaTypes.Contains(originalContent.Headers.ContentType?.MediaType!)) || (compress is true))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
+
                 _logger.AddingCompression(_compressionProvider.EncodingName);
             }
         }
@@ -42,11 +45,12 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     {
         if (request?.Content is { } originalContent)
         {
-            var mediaType = originalContent.Headers.ContentType?.MediaType;
+            var compress = request.Options.TryGetValue(EnableCompressionOptionsKey, out var value) ? (bool?)value : null;
 
-            if (_mediaTypes.Contains(mediaType!))
+            if (((compress is null) && _mediaTypes.Contains(originalContent.Headers.ContentType?.MediaType!)) || (compress is true))
             {
                 request.Content = CreateCompressionStreamContent(originalContent);
+
                 _logger.AddingCompression(_compressionProvider.EncodingName);
             }
         }
