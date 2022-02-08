@@ -22,7 +22,7 @@ public sealed class RequestCompressionHttpMessageHandlerFactoryTests
 
         var loggerFactory = NullLoggerFactory.Instance;
         var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry.Object, loggerFactory);
-        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "text/plain" });
+        var mediaTypes = new[] { "text/plain" };
         var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("e1", CompressionLevel.Optimal, mediaTypes);
 
         Assert.IsNotNull(httpMessageHandler);
@@ -59,7 +59,7 @@ public sealed class RequestCompressionHttpMessageHandlerFactoryTests
         var providerRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var loggerFactory = NullLoggerFactory.Instance;
         var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry.Object, loggerFactory);
-        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "text/plain" });
+        var mediaTypes = new[] { "text/plain" };
 
         Assert.ThrowsException<InvalidOperationException>(() =>
             httpMessageHandlerFactory.CreateHandler(null, CompressionLevel.Optimal, mediaTypes));
@@ -73,7 +73,7 @@ public sealed class RequestCompressionHttpMessageHandlerFactoryTests
         var providerRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var loggerFactory = NullLoggerFactory.Instance;
         var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry.Object, loggerFactory);
-        var mediaTypes = new RequestCompressionMediaTypeCollection(new[] { "text/plain" });
+        var mediaTypes = new[] { "text/plain" };
 
         Assert.ThrowsException<InvalidOperationException>(() =>
             httpMessageHandlerFactory.CreateHandler("e1", null, mediaTypes));

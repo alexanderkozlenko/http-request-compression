@@ -13,10 +13,10 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 
     private readonly IRequestCompressionProvider _compressionProvider;
     private readonly CompressionLevel _compressionLevel;
-    private readonly RequestCompressionMediaTypeCollection _mediaTypes;
+    private readonly ICollection<string> _mediaTypes;
     private readonly ILogger _logger;
 
-    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel, RequestCompressionMediaTypeCollection mediaTypes, ILogger logger)
+    public RequestCompressionHttpMessageHandler(IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel, ICollection<string> mediaTypes, ILogger logger)
     {
         _compressionProvider = compressionProvider;
         _compressionLevel = compressionLevel;
