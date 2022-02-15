@@ -1,4 +1,5 @@
-﻿#pragma warning disable CS1998
+﻿#pragma warning disable IDE1006
+#pragma warning disable CS1998
 
 using System.IO.Compression;
 using Anemonis.Extensions.RequestCompression.UnitTests.TestStubs;
