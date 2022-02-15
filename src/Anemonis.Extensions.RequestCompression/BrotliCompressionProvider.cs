@@ -14,6 +14,8 @@ public sealed class BrotliCompressionProvider : IRequestCompressionProvider
 
     public Stream CreateStream(Stream outputStreeam, CompressionLevel compressionLevel)
     {
+        ArgumentNullException.ThrowIfNull(outputStreeam);
+
         return new BrotliStream(outputStreeam, compressionLevel, leaveOpen: true);
     }
 

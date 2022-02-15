@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anemonis.Extensions.Request
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anemonis.Extensions.RequestCompression.IntgTests", "Anemonis.Extensions.RequestCompression.IntgTests\Anemonis.Extensions.RequestCompression.IntgTests.csproj", "{0EFEC0A3-189A-4F29-967C-E2AE5AFB89FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anemonis.Extensions.RequestCompression.PerfTests", "Anemonis.Extensions.RequestCompression.PerfTests\Anemonis.Extensions.RequestCompression.PerfTests.csproj", "{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{0EFEC0A3-189A-4F29-967C-E2AE5AFB89FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EFEC0A3-189A-4F29-967C-E2AE5AFB89FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EFEC0A3-189A-4F29-967C-E2AE5AFB89FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

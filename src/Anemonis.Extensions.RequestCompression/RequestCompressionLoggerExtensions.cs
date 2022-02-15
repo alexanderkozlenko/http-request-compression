@@ -6,10 +6,6 @@ namespace Anemonis.Extensions.RequestCompression;
 
 internal static partial class RequestCompressionLoggerExtensions
 {
-    [LoggerMessage(
-        Level = LogLevel.Debug,
-        EventId = 1,
-        EventName = "AddingCompression",
-        Message = "Adding compression with '{format}' format")]
-    public static partial void AddingCompression(this ILogger logger, string format);
+    [LoggerMessage(1, LogLevel.Debug, "The request will be compressed with '{provider}'.", EventName = "CompressWith")]
+    public static partial void CompressingWith(this ILogger logger, string provider);
 }

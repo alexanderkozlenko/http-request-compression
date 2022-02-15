@@ -14,6 +14,8 @@ public sealed class GzipCompressionProvider : IRequestCompressionProvider
 
     public Stream CreateStream(Stream outputStreeam, CompressionLevel compressionLevel)
     {
+        ArgumentNullException.ThrowIfNull(outputStreeam);
+
         return new GZipStream(outputStreeam, compressionLevel, leaveOpen: true);
     }
 

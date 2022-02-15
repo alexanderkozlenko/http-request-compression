@@ -23,7 +23,10 @@ public static class RequestCompressionServiceCollectionExtensions
         services.TryAddSingleton<IRequestCompressionProviderRegistry, RequestCompressionProviderRegistry>();
         services.TryAddSingleton<IRequestCompressionHttpMessageHandlerFactory, RequestCompressionHttpMessageHandlerFactory>();
         services.Configure<RequestCompressionOptions>(Configure);
+        services.Configure<RequestCompressionOptions>(ConfigureHandler);
         services.PostConfigure<RequestCompressionOptions>(PostConfigure);
+        services.PostConfigure<RequestCompressionOptions>(PostConfigureHandler);
+        services.ConfigureAll<RequestCompressionHttpMessageHandlerOptions>(ConfigureHandler);
 
         return services;
     }
@@ -40,8 +43,11 @@ public static class RequestCompressionServiceCollectionExtensions
         services.TryAddSingleton<IRequestCompressionProviderRegistry, RequestCompressionProviderRegistry>();
         services.TryAddSingleton<IRequestCompressionHttpMessageHandlerFactory, RequestCompressionHttpMessageHandlerFactory>();
         services.Configure<RequestCompressionOptions>(Configure);
-        services.Configure(configureOptions);
+        services.Configure<RequestCompressionOptions>(ConfigureHandler);
         services.PostConfigure<RequestCompressionOptions>(PostConfigure);
+        services.PostConfigure<RequestCompressionOptions>(PostConfigureHandler);
+        services.ConfigureAll<RequestCompressionHttpMessageHandlerOptions>(ConfigureHandler);
+        services.ConfigureAll(configureOptions);
 
         return services;
     }
@@ -50,14 +56,23 @@ public static class RequestCompressionServiceCollectionExtensions
     {
         options.Providers.Add<BrotliCompressionProvider>();
         options.Providers.Add<GzipCompressionProvider>();
-        options.DefaultEncodingName = "br";
-        options.DefaultCompressionLevel = CompressionLevel.Fastest;
-        options.DefaultMediaTypes.Add(MediaTypeNames.Application.Xml);
-        options.DefaultMediaTypes.Add(MediaTypeNames.Application.Json);
+    }
+
+    private static void ConfigureHandler(RequestCompressionHttpMessageHandlerOptions options)
+    {
+        options.EncodingName = "br";
+        options.CompressionLevel = CompressionLevel.Fastest;
+        options.MediaTypes.Add(MediaTypeNames.Application.Xml);
+        options.MediaTypes.Add(MediaTypeNames.Application.Json);
     }
 
     private static void PostConfigure(RequestCompressionOptions options)
     {
-        options.DefaultMediaTypes.TrimExcess();
+        options.Providers.TrimExcess();
+    }
+
+    private static void PostConfigureHandler(RequestCompressionHttpMessageHandlerOptions options)
+    {
+        options.MediaTypes.TrimExcess();
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.IO.Compression;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -10,89 +9,50 @@ namespace Anemonis.Extensions.RequestCompression.UnitTests;
 public sealed class RequestCompressionHttpMessageHandlerFactoryTests
 {
     [TestMethod]
-    public void CreateHandlerFromParameters()
+    public void CreateHandlerWhenNameIsNull()
     {
-        var options = new RequestCompressionOptions();
-        var provider = new Mock<IRequestCompressionProvider>(MockBehavior.Strict);
         var providerRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
-
-        providerRegistry
-            .Setup(o => o.GetProvider(It.IsAny<string>()))
-            .Returns(provider.Object);
-
         var loggerFactory = NullLoggerFactory.Instance;
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry.Object, loggerFactory);
-        var mediaTypes = new[] { "text/plain" };
-        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("e1", CompressionLevel.Optimal, mediaTypes);
+        var optionsMonitor = new Mock<IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions>>(MockBehavior.Strict);
+
+        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(providerRegistry.Object, loggerFactory, optionsMonitor.Object);
+
+        Assert.ThrowsException<ArgumentNullException>(() =>
+            httpMessageHandlerFactory.CreateHandler(null!));
+    }
+
+    [TestMethod]
+    public void CreateHandlerWhenInstanceIsDefault()
+    {
+        var providerRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
+        var loggerFactory = NullLoggerFactory.Instance;
+        var optionsMonitor = new Mock<IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions>>(MockBehavior.Strict);
+        var options = new RequestCompressionHttpMessageHandlerOptions();
+
+        optionsMonitor
+            .Setup(o => o.Get(Options.DefaultName))
+            .Returns(options);
+
+        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(providerRegistry.Object, loggerFactory, optionsMonitor.Object);
+        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler(Options.DefaultName);
 
         Assert.IsNotNull(httpMessageHandler);
     }
 
     [TestMethod]
-    public void CreateHandlerFromOptions()
+    public void CreateHandlerWhenInstanceIsNamed()
     {
-        var options = new RequestCompressionOptions();
-
-        options.DefaultEncodingName = "e1";
-        options.DefaultCompressionLevel = CompressionLevel.Optimal;
-        options.DefaultMediaTypes.Add("text/plain");
-
-        var provider = new Mock<IRequestCompressionProvider>(MockBehavior.Strict);
-        var providerRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
-
-        providerRegistry
-            .Setup(o => o.GetProvider(It.IsAny<string>()))
-            .Returns(provider.Object);
-
-        var loggerFactory = NullLoggerFactory.Instance;
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry.Object, loggerFactory);
-        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler(null, null, null);
-
-        Assert.IsNotNull(httpMessageHandler);
-    }
-
-    [TestMethod]
-    public void CreateHandlerWhenEncodingNameIsNotDefined()
-    {
-        var options = new RequestCompressionOptions();
-        var provider = new Mock<IRequestCompressionProvider>(MockBehavior.Strict);
         var providerRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var loggerFactory = NullLoggerFactory.Instance;
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry.Object, loggerFactory);
-        var mediaTypes = new[] { "text/plain" };
+        var optionsMonitor = new Mock<IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions>>(MockBehavior.Strict);
+        var options = new RequestCompressionHttpMessageHandlerOptions();
 
-        Assert.ThrowsException<InvalidOperationException>(() =>
-            httpMessageHandlerFactory.CreateHandler(null, CompressionLevel.Optimal, mediaTypes));
-    }
+        optionsMonitor
+            .Setup(o => o.Get("name"))
+            .Returns(options);
 
-    [TestMethod]
-    public void CreateHandlerWhenCompressionLevelIsNotDefined()
-    {
-        var options = new RequestCompressionOptions();
-        var provider = new Mock<IRequestCompressionProvider>(MockBehavior.Strict);
-        var providerRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
-        var loggerFactory = NullLoggerFactory.Instance;
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry.Object, loggerFactory);
-        var mediaTypes = new[] { "text/plain" };
-
-        Assert.ThrowsException<InvalidOperationException>(() =>
-            httpMessageHandlerFactory.CreateHandler("e1", null, mediaTypes));
-    }
-
-    [TestMethod]
-    public void CreateHandlerWhenMediaTypesIsNotDefined()
-    {
-        var options = new RequestCompressionOptions();
-        var provider = new Mock<IRequestCompressionProvider>(MockBehavior.Strict);
-        var providerRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
-
-        providerRegistry
-            .Setup(o => o.GetProvider(It.IsAny<string>()))
-            .Returns(provider.Object);
-
-        var loggerFactory = NullLoggerFactory.Instance;
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry.Object, loggerFactory);
-        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("e1", CompressionLevel.Optimal, null);
+        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(providerRegistry.Object, loggerFactory, optionsMonitor.Object);
+        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("name");
 
         Assert.IsNotNull(httpMessageHandler);
     }

@@ -1,4 +1,4 @@
-﻿using Anemonis.Extensions.RequestCompression.UnitTests.TestStubs;
+﻿using System.IO.Compression;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,6 +8,19 @@ namespace Anemonis.Extensions.RequestCompression.UnitTests;
 public sealed class RequestCompressionProviderRegistryTests
 {
     [TestMethod]
+    public void GetProviderWhenNameNotRegistered()
+    {
+        var options = new RequestCompressionOptions();
+
+        var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
+
+        var result = providerRegistry.TryGetProvider("a", out var provider);
+
+        Assert.IsFalse(result);
+        Assert.IsNull(provider);
+    }
+
+    [TestMethod]
     public void GetProvider()
     {
         var options = new RequestCompressionOptions();
@@ -15,19 +28,39 @@ public sealed class RequestCompressionProviderRegistryTests
         options.Providers.Add<TestCompressionProvider>();
 
         var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
-        var provider = providerRegistry.GetProvider("e1");
 
+        var result = providerRegistry.TryGetProvider("a", out var provider);
+
+        Assert.IsTrue(result);
         Assert.IsNotNull(provider);
-        Assert.IsInstanceOfType(provider, typeof(TestCompressionProvider));
     }
 
     [TestMethod]
-    public void GetProviderWhenNotRegistered()
+    public void GetProviderWhenNameIsIdentity()
     {
         var options = new RequestCompressionOptions();
+
         var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
 
-        Assert.ThrowsException<InvalidOperationException>(() =>
-            providerRegistry.GetProvider("e1"));
+        var result = providerRegistry.TryGetProvider("identity", out var provider);
+
+        Assert.IsTrue(result);
+        Assert.IsNull(provider);
+    }
+
+    private sealed class TestCompressionProvider : IRequestCompressionProvider
+    {
+        public Stream CreateStream(Stream outputStream, CompressionLevel compressionLevel)
+        {
+            throw new NotSupportedException();
+        }
+
+        public string EncodingName
+        {
+            get
+            {
+                return "a";
+            }
+        }
     }
 }

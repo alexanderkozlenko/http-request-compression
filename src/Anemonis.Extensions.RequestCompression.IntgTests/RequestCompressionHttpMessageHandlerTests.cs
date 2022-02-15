@@ -1,9 +1,6 @@
-#pragma warning disable IDE1006
-
 using System.IO.Compression;
 using System.Net.Http.Json;
 using System.Net.Mime;
-using Anemonis.Extensions.RequestCompression.IntgTests.TestStubs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,10 +9,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Anemonis.Extensions.RequestCompression.IntgTests;
 
 [TestClass]
-public sealed class CompressionHttpMessageHandlerTests
+public sealed class RequestCompressionHttpMessageHandlerTests
 {
     [TestMethod]
-    public async Task CompressWithServiceProviderAndDefaultOptions()
+    public async Task ApplyCompressionWithDefaultOptions()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
@@ -52,7 +49,7 @@ public sealed class CompressionHttpMessageHandlerTests
     }
 
     [TestMethod]
-    public async Task SkipWithServiceProviderAndDefaultOptions()
+    public async Task SkipCompressionWithDefaultOptions()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
@@ -88,7 +85,7 @@ public sealed class CompressionHttpMessageHandlerTests
     }
 
     [TestMethod]
-    public async Task ForcedSkipWithServiceProviderAndDefaultOptions()
+    public async Task SkipCompressionWithDefaultOptionsByRequestSwitch()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
@@ -119,13 +116,13 @@ public sealed class CompressionHttpMessageHandlerTests
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         httpRequestMessage.Content = JsonContent.Create("Hello World!");
-        httpRequestMessage.SetCompressionEnabled(false);
+        httpRequestMessage.Options.SetCompressionEnabled(false);
 
         await httpClient.SendAsync(httpRequestMessage);
     }
 
     [TestMethod]
-    public async Task CompressWithServiceProviderAndSpecificOptions()
+    public async Task ApplyCompressionWithSpecificOptions()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
@@ -148,16 +145,22 @@ public sealed class CompressionHttpMessageHandlerTests
             {
                 options.Providers.Clear();
                 options.Providers.Add<BrotliCompressionProvider>();
-                options.DefaultEncodingName = "identity";
-                options.DefaultCompressionLevel = CompressionLevel.SmallestSize;
-                options.DefaultMediaTypes.Clear();
-                options.DefaultMediaTypes.Add(MediaTypeNames.Application.Octet);
+                options.EncodingName = "identity";
+                options.CompressionLevel = CompressionLevel.SmallestSize;
+                options.MediaTypes.Clear();
+                options.MediaTypes.Add(MediaTypeNames.Application.Octet);
             });
 
         serviceCollection
             .AddHttpClient(Options.DefaultName)
             .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
-            .AddRequestCompressionHandler("br", CompressionLevel.Optimal, new[] { MediaTypeNames.Application.Json });
+            .AddRequestCompressionHandler(options =>
+            {
+                options.EncodingName = "br";
+                options.CompressionLevel = CompressionLevel.Optimal;
+                options.MediaTypes.Clear();
+                options.MediaTypes.Add(MediaTypeNames.Application.Json);
+            });
 
         using var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -170,7 +173,7 @@ public sealed class CompressionHttpMessageHandlerTests
     }
 
     [TestMethod]
-    public async Task SkipWithServiceProviderAndSpecificOptions()
+    public async Task SkipCompressionWithSpecificOptions()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
@@ -192,16 +195,22 @@ public sealed class CompressionHttpMessageHandlerTests
             {
                 options.Providers.Clear();
                 options.Providers.Add<BrotliCompressionProvider>();
-                options.DefaultEncodingName = "identity";
-                options.DefaultCompressionLevel = CompressionLevel.SmallestSize;
-                options.DefaultMediaTypes.Clear();
-                options.DefaultMediaTypes.Add(MediaTypeNames.Application.Octet);
+                options.EncodingName = "identity";
+                options.CompressionLevel = CompressionLevel.SmallestSize;
+                options.MediaTypes.Clear();
+                options.MediaTypes.Add(MediaTypeNames.Application.Octet);
             });
 
         serviceCollection
             .AddHttpClient(Options.DefaultName)
             .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
-            .AddRequestCompressionHandler("br", CompressionLevel.Optimal, new[] { MediaTypeNames.Application.Json });
+            .AddRequestCompressionHandler(options =>
+            {
+                options.EncodingName = "br";
+                options.CompressionLevel = CompressionLevel.Optimal;
+                options.MediaTypes.Clear();
+                options.MediaTypes.Add(MediaTypeNames.Application.Json);
+            });
 
         using var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -214,7 +223,7 @@ public sealed class CompressionHttpMessageHandlerTests
     }
 
     [TestMethod]
-    public async Task ForcedSkipWithServiceProviderAndSpecificOptions()
+    public async Task SkipCompressionWithSpecificOptionsByRequestSwitch()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
@@ -236,16 +245,22 @@ public sealed class CompressionHttpMessageHandlerTests
             {
                 options.Providers.Clear();
                 options.Providers.Add<BrotliCompressionProvider>();
-                options.DefaultEncodingName = "identity";
-                options.DefaultCompressionLevel = CompressionLevel.SmallestSize;
-                options.DefaultMediaTypes.Clear();
-                options.DefaultMediaTypes.Add(MediaTypeNames.Application.Octet);
+                options.EncodingName = "identity";
+                options.CompressionLevel = CompressionLevel.SmallestSize;
+                options.MediaTypes.Clear();
+                options.MediaTypes.Add(MediaTypeNames.Application.Octet);
             });
 
         serviceCollection
             .AddHttpClient(Options.DefaultName)
             .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
-            .AddRequestCompressionHandler("br", CompressionLevel.Optimal, new[] { MediaTypeNames.Application.Json });
+            .AddRequestCompressionHandler(options =>
+            {
+                options.EncodingName = "br";
+                options.CompressionLevel = CompressionLevel.Optimal;
+                options.MediaTypes.Clear();
+                options.MediaTypes.Add(MediaTypeNames.Application.Json);
+            });
 
         using var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -253,130 +268,70 @@ public sealed class CompressionHttpMessageHandlerTests
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         httpRequestMessage.Content = JsonContent.Create("Hello World!");
-        httpRequestMessage.SetCompressionEnabled(false);
+        httpRequestMessage.Options.SetCompressionEnabled(false);
 
         await httpClient.SendAsync(httpRequestMessage);
     }
 
     [TestMethod]
-    public async Task CompressWithoutServiceProvider()
+    public async Task UseDiscoveredCompressionFormat()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
             Assert.IsNotNull(request);
-            Assert.IsNotNull(request.Content);
 
-            var stream = await request.Content.ReadAsStreamAsync();
-            var message = AsBrotliEncodedString(stream);
+            if (request.Method == HttpMethod.Options)
+            {
+                var response = new HttpResponseMessage();
 
-            Assert.AreEqual("\"Hello World!\"", message);
-            Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.IsNull(request.Content.Headers.ContentLength);
+                response.Headers.TryAddWithoutValidation("Accept-Encoding", "br;q=1.0, identity; q=0.5, *;q=0");
 
-            return new();
+                return response;
+            }
+            else
+            {
+                Assert.IsNotNull(request.Content);
+
+                var stream = await request.Content.ReadAsStreamAsync();
+                var message = AsBrotliEncodedString(stream);
+
+                Assert.AreEqual("\"Hello World!\"", message);
+                Assert.AreEqual("br", request.Content.Headers.ContentEncoding.LastOrDefault());
+                Assert.IsNull(request.Content.Headers.ContentLength);
+
+                return new();
+            }
         }
 
-        using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Trace).AddConsole());
+        var serviceCollection = new ServiceCollection()
+            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace).AddConsole())
+            .AddRequestCompression();
 
-        var options = new RequestCompressionOptions();
+        serviceCollection
+            .AddHttpClient(Options.DefaultName)
+            .ConfigurePrimaryHttpMessageHandler(() => new TestPrimaryHandler(PrimaryHandler))
+            .AddRequestCompressionHandler(options =>
+            {
+                options.EncodingName = "identity";
+            });
 
-        options.Providers.Add<BrotliCompressionProvider>();
+        using var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        var compressionLevel = CompressionLevel.Fastest;
-        var mediaTypes = new[] { MediaTypeNames.Application.Json };
-        var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry, loggerFactory);
-        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("br", compressionLevel, mediaTypes);
+        var httpClient = serviceProvider.GetRequiredService<HttpClient>();
+        var httpRequestMessage1 = new HttpRequestMessage(HttpMethod.Options, "http://localhost");
 
-        httpMessageHandler.InnerHandler = new TestPrimaryHandler(PrimaryHandler);
+        httpRequestMessage1.Options.AddCompressionDiscovery(out var encodingContext);
 
-        var httpClient = new HttpClient(httpMessageHandler);
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+        await httpClient.SendAsync(httpRequestMessage1);
 
-        httpRequestMessage.Content = JsonContent.Create("Hello World!");
+        Assert.AreEqual("br", encodingContext.EncodingName);
 
-        await httpClient.SendAsync(httpRequestMessage);
-    }
+        var httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
-    [TestMethod]
-    public async Task SkipWithoutServiceProvider()
-    {
-        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
-        {
-            Assert.IsNotNull(request);
-            Assert.IsNotNull(request.Content);
+        httpRequestMessage2.Content = JsonContent.Create("Hello World!");
+        httpRequestMessage2.Options.SetCompressionEncoding(encodingContext.EncodingName);
 
-            var message = await request.Content.ReadAsStringAsync();
-
-            Assert.AreEqual("Hello World!", message);
-            Assert.IsNull(request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.IsNotNull(request.Content.Headers.ContentLength);
-
-            return new();
-        }
-
-        using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Trace).AddConsole());
-
-        var logger = loggerFactory.CreateLogger<RequestCompressionHttpMessageHandler>();
-        var options = new RequestCompressionOptions();
-
-        options.Providers.Add<BrotliCompressionProvider>();
-
-        var compressionLevel = CompressionLevel.Fastest;
-        var mediaTypes = new[] { MediaTypeNames.Application.Json };
-        var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry, loggerFactory);
-        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("br", compressionLevel, mediaTypes);
-
-        httpMessageHandler.InnerHandler = new TestPrimaryHandler(PrimaryHandler);
-
-        var httpClient = new HttpClient(httpMessageHandler);
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
-
-        httpRequestMessage.Content = new StringContent("Hello World!");
-
-        await httpClient.SendAsync(httpRequestMessage);
-    }
-
-    [TestMethod]
-    public async Task ForcedSkipWithoutServiceProvider()
-    {
-        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
-        {
-            Assert.IsNotNull(request);
-            Assert.IsNotNull(request.Content);
-
-            var message = await request.Content.ReadAsStringAsync();
-
-            Assert.AreEqual("\"Hello World!\"", message);
-            Assert.IsNull(request.Content.Headers.ContentEncoding.LastOrDefault());
-            Assert.IsNotNull(request.Content.Headers.ContentLength);
-
-            return new();
-        }
-
-        using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Trace).AddConsole());
-
-        var logger = loggerFactory.CreateLogger<RequestCompressionHttpMessageHandler>();
-        var options = new RequestCompressionOptions();
-
-        options.Providers.Add<BrotliCompressionProvider>();
-
-        var compressionLevel = CompressionLevel.Fastest;
-        var mediaTypes = new[] { MediaTypeNames.Application.Json };
-        var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(Options.Create(options), providerRegistry, loggerFactory);
-        var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("br", compressionLevel, mediaTypes);
-
-        httpMessageHandler.InnerHandler = new TestPrimaryHandler(PrimaryHandler);
-
-        var httpClient = new HttpClient(httpMessageHandler);
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
-
-        httpRequestMessage.Content = JsonContent.Create("Hello World!");
-        httpRequestMessage.SetCompressionEnabled(false);
-
-        await httpClient.SendAsync(httpRequestMessage);
+        await httpClient.SendAsync(httpRequestMessage2);
     }
 
     private static string AsBrotliEncodedString(Stream inputStream)
@@ -385,5 +340,25 @@ public sealed class CompressionHttpMessageHandlerTests
         using var streamReader = new StreamReader(decodeStream);
 
         return streamReader.ReadToEnd();
+    }
+
+    private sealed class TestPrimaryHandler : HttpMessageHandler
+    {
+        private readonly Func<HttpRequestMessage, Task<HttpResponseMessage>> _handler;
+
+        public TestPrimaryHandler(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler)
+        {
+            _handler = handler;
+        }
+
+        protected sealed override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            return _handler.Invoke(request).GetAwaiter().GetResult();
+        }
+
+        protected sealed override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            return _handler.Invoke(request);
+        }
     }
 }

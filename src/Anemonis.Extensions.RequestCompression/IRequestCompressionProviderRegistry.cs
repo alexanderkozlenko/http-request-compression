@@ -6,5 +6,5 @@ namespace Anemonis.Extensions.RequestCompression;
 
 public interface IRequestCompressionProviderRegistry
 {
-    IRequestCompressionProvider GetProvider(string encodingName);
+    bool TryGetProvider(string encodingName, out IRequestCompressionProvider? provider);
 }

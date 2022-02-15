@@ -23,6 +23,8 @@ public sealed class RequestCompressionProviderCollection : ICollection<Type>
 
     public void Add([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         if (!typeof(IRequestCompressionProvider).IsAssignableFrom(item))
         {
             throw new ArgumentException($"The provider must implement {nameof(IRequestCompressionProvider)}.", nameof(item));
@@ -44,11 +46,15 @@ public sealed class RequestCompressionProviderCollection : ICollection<Type>
 
     public bool Contains(Type item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         return _items.Contains(item);
     }
 
     void ICollection<Type>.CopyTo(Type[] array, int arrayIndex)
     {
+        ArgumentNullException.ThrowIfNull(array);
+
         _items.CopyTo(array, arrayIndex);
     }
 
@@ -75,7 +81,14 @@ public sealed class RequestCompressionProviderCollection : ICollection<Type>
 
     public bool Remove(Type item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         return _items.Remove(item);
+    }
+
+    public void TrimExcess()
+    {
+        _items.TrimExcess();
     }
 
     public int Count

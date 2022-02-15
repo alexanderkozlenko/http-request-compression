@@ -2,7 +2,6 @@
 
 #pragma warning disable CS1591
 
-using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -10,36 +9,28 @@ namespace Anemonis.Extensions.RequestCompression;
 
 public sealed class RequestCompressionHttpMessageHandlerFactory : IRequestCompressionHttpMessageHandlerFactory
 {
-    private readonly IOptions<RequestCompressionOptions> _options;
     private readonly IRequestCompressionProviderRegistry _compressionProviderRegistry;
-    private readonly ILogger _logger;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions> _options;
 
-    public RequestCompressionHttpMessageHandlerFactory(IOptions<RequestCompressionOptions> options, IRequestCompressionProviderRegistry compressionProviderRegistry, ILoggerFactory loggerFactory)
+    public RequestCompressionHttpMessageHandlerFactory(IRequestCompressionProviderRegistry compressionProviderRegistry, ILoggerFactory loggerFactory, IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions> options)
     {
-        _options = options;
+        ArgumentNullException.ThrowIfNull(compressionProviderRegistry);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(options);
+
         _compressionProviderRegistry = compressionProviderRegistry;
-        _logger = loggerFactory.CreateLogger<RequestCompressionHttpMessageHandler>();
+        _loggerFactory = loggerFactory;
+        _options = options;
     }
 
-    public DelegatingHandler CreateHandler(string? encodingName, CompressionLevel? compressionLevel, ICollection<string>? mediaTypes)
+    public DelegatingHandler CreateHandler(string name)
     {
-        var options = _options.Value;
+        ArgumentNullException.ThrowIfNull(name);
 
-        encodingName ??= options.DefaultEncodingName;
-        compressionLevel ??= options.DefaultCompressionLevel;
-        mediaTypes ??= options.DefaultMediaTypes;
+        var logger = _loggerFactory.CreateLogger<RequestCompressionHttpMessageHandler>();
+        var options = _options.Get(name);
 
-        if (encodingName is null)
-        {
-            throw new InvalidOperationException("Encoding name is not defined");
-        }
-        if (compressionLevel is null)
-        {
-            throw new InvalidOperationException("Compression level is not defined");
-        }
-
-        var compressionProvider = _compressionProviderRegistry.GetProvider(encodingName);
-
-        return new RequestCompressionHttpMessageHandler(compressionProvider, compressionLevel.Value, mediaTypes, _logger);
+        return new RequestCompressionHttpMessageHandler(_compressionProviderRegistry, logger, options);
     }
 }

@@ -17,6 +17,8 @@ public sealed class RequestCompressionMediaTypeCollection : ICollection<string>
 
     public RequestCompressionMediaTypeCollection(IEnumerable<string> collection)
     {
+        ArgumentNullException.ThrowIfNull(collection);
+
         _items = new(collection, StringComparer.OrdinalIgnoreCase);
     }
 
@@ -34,11 +36,15 @@ public sealed class RequestCompressionMediaTypeCollection : ICollection<string>
 
     public bool Contains(string item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         return _items.Contains(item);
     }
 
     void ICollection<string>.CopyTo(string[] array, int arrayIndex)
     {
+        ArgumentNullException.ThrowIfNull(array);
+
         _items.CopyTo(array, arrayIndex);
     }
 
@@ -59,10 +65,12 @@ public sealed class RequestCompressionMediaTypeCollection : ICollection<string>
 
     public bool Remove(string item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         return _items.Remove(item);
     }
 
-    internal void TrimExcess()
+    public void TrimExcess()
     {
         _items.TrimExcess();
     }

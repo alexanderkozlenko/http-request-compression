@@ -4,37 +4,59 @@
 #pragma warning disable CS1591
 #pragma warning disable IDE0130
 
-using System.IO.Compression;
 using Anemonis.Extensions.RequestCompression;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class RequestCompressionHttpClientBuilderExtensions
 {
-    /// <summary>Adds a message handler to provide request compression for a named <see cref="HttpClient" />.</summary>
-    /// <param name="encodingName">The encoding token that defines a compression format.</param>
-    /// <param name="compressionLevel">The level of compression for the defined format, if applicable.</param>
-    /// <param name="mediaTypes">The collection of Content-Type media types to compress.</param>
+    /// <summary>Adds a message handler to provide HTTP request compression for a named <see cref="HttpClient" />.</summary>
     /// <returns>The current <see cref="IHttpClientBuilder" /> instance.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="builder" /> is <see langword="null" />.</exception>
-    public static IHttpClientBuilder AddRequestCompressionHandler(this IHttpClientBuilder builder, string? encodingName = null, CompressionLevel? compressionLevel = null, IEnumerable<string>? mediaTypes = null)
+    public static IHttpClientBuilder AddRequestCompressionHandler(this IHttpClientBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        if (mediaTypes is not null and not RequestCompressionMediaTypeCollection)
+        static DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
         {
-            mediaTypes = new RequestCompressionMediaTypeCollection(mediaTypes);
-        }
+            var factory = services.GetRequiredService<IRequestCompressionHttpMessageHandlerFactory>();
 
-        DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
-        {
-            var httpMessageHandlerFactory = services.GetRequiredService<IRequestCompressionHttpMessageHandlerFactory>();
-
-            return httpMessageHandlerFactory.CreateHandler(encodingName, compressionLevel, mediaTypes as RequestCompressionMediaTypeCollection);
+            return factory.CreateHandler(Options.Options.DefaultName);
         }
 
         builder.AddHttpMessageHandler(CreateHttpMessageHandler);
 
         return builder;
+    }
+
+    /// <summary>Adds a message handler to provide HTTP request compression for a named <see cref="HttpClient" />.</summary>
+    /// <param name="configureOptions">The delegate to configure a <see cref="RequestCompressionHttpMessageHandlerOptions" /> instance.</param>
+    /// <returns>The current <see cref="IHttpClientBuilder" /> instance.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="builder" /> or <paramref name="configureOptions" /> is <see langword="null" />.</exception>
+    public static IHttpClientBuilder AddRequestCompressionHandler(this IHttpClientBuilder builder, Action<RequestCompressionHttpMessageHandlerOptions> configureOptions)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configureOptions);
+
+        var instanceName = builder.Name;
+
+        builder.Services.PostConfigure(instanceName, configureOptions);
+        builder.Services.PostConfigure<RequestCompressionHttpMessageHandlerOptions>(instanceName, PostConfigure);
+
+        DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
+        {
+            var handlerFactory = services.GetRequiredService<IRequestCompressionHttpMessageHandlerFactory>();
+
+            return handlerFactory.CreateHandler(instanceName);
+        }
+
+        builder.AddHttpMessageHandler(CreateHttpMessageHandler);
+
+        return builder;
+    }
+
+    private static void PostConfigure(RequestCompressionHttpMessageHandlerOptions options)
+    {
+        options.MediaTypes.TrimExcess();
     }
 }
