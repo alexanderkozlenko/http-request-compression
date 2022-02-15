@@ -1,3 +1,5 @@
+#pragma warning disable IDE1006
+
 using System.IO.Compression;
 using System.Net.Http.Json;
 using System.Net.Mime;
