@@ -47,9 +47,10 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         {
             encodingName = _options.EncodingName;
         }
-
-        encodingName ??= ContentCodingTokens.Identity;
-
+        if (encodingName is null)
+        {
+            return;
+        }
         if (!_compressionProviderRegistry.TryGetProvider(encodingName, out var compressionProvider))
         {
             throw new InvalidOperationException($"No matching request compression provider found for encoding '{encodingName}'.");

@@ -218,7 +218,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
     }
 
     [TestMethod]
-    public async Task SendAsyncWhenMediaTypeIsSupportedAndEncodingIsNully()
+    public async Task SendAsyncWhenMediaTypeIsSupportedAndEncodingIsNull()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
