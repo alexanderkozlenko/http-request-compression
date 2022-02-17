@@ -3,7 +3,7 @@
 [![MyGet](https://img.shields.io/myget/alexanderkozlenko/vpre/Anemonis.Extensions.RequestCompression.svg?label=myget&style=flat-square)](https://www.myget.org/feed/alexanderkozlenko/package/nuget/Anemonis.Extensions.RequestCompression)
 
 
-Transparent HTTP request compression handler with support of standard and custom content encodings.
+Transparent HTTP client message handler for request compression with support for [RFC 7694](https://httpwg.org/specs/rfc7694.html).
 
 ## Quick Links
 
