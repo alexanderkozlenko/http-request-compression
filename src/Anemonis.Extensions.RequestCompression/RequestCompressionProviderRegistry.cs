@@ -46,7 +46,7 @@ public sealed class RequestCompressionProviderRegistry : IRequestCompressionProv
     {
         return
             !string.Equals(encodingName, ContentCodingTokens.Identity, StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.OrdinalIgnoreCase);
+            !string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.Ordinal);
     }
 
     public bool TryGetProvider(string encodingName, out IRequestCompressionProvider? provider)

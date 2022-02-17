@@ -19,9 +19,9 @@ public static class RequestCompressionHttpClientBuilderExtensions
 
         static DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
         {
-            var factory = services.GetRequiredService<IRequestCompressionHttpMessageHandlerFactory>();
+            var handlerFactory = services.GetRequiredService<IRequestCompressionHttpMessageHandlerFactory>();
 
-            return factory.CreateHandler(Options.Options.DefaultName);
+            return handlerFactory.CreateHandler(Options.Options.DefaultName);
         }
 
         builder.AddHttpMessageHandler(CreateHttpMessageHandler);

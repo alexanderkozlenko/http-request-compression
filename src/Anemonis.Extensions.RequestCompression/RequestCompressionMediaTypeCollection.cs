@@ -8,18 +8,10 @@ namespace Anemonis.Extensions.RequestCompression;
 
 public sealed class RequestCompressionMediaTypeCollection : ICollection<string>
 {
-    private readonly HashSet<string> _items;
+    private readonly HashSet<string> _items = new(StringComparer.OrdinalIgnoreCase);
 
     public RequestCompressionMediaTypeCollection()
     {
-        _items = new(StringComparer.OrdinalIgnoreCase);
-    }
-
-    public RequestCompressionMediaTypeCollection(IEnumerable<string> collection)
-    {
-        ArgumentNullException.ThrowIfNull(collection);
-
-        _items = new(collection, StringComparer.OrdinalIgnoreCase);
     }
 
     public void Add(string item)

@@ -46,7 +46,7 @@ public static class RequestCompressionHttpRequestOptionsExtensions
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        context = new RequerstCompressionEncodingContext();
+        context = new();
         options.Set(RequestCompressionOptionKeys.EncodingContext, context);
     }
 }

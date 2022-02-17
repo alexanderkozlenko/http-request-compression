@@ -163,7 +163,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             {
                 return compressionProvider?.EncodingName;
             }
-            if (string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
             {
                 return _options.EncodingName;
             }
@@ -193,7 +193,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 
                     return compressionProvider?.EncodingName;
                 }
-                if (string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
                 {
                     if (priorityQueueIsRetainable)
                     {
