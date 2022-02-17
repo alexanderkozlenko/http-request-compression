@@ -27,7 +27,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors><![CDATA[Oleksandr Kozlenko]]></Authors>
     <Copyright><![CDATA[© Oleksandr Kozlenko. All rights reserved.]]></Copyright>
-    <PackageDescription><![CDATA[HTTP client handler for request compression.]]></PackageDescription>
+    <PackageDescription><![CDATA[Transparent HTTP client message handler for request compression with support for RFC 7694.]]></PackageDescription>
     <PackageIcon>PackageIcon.png</PackageIcon>
     <PackageTags><![CDATA[]]></PackageTags>
   </PropertyGroup>
