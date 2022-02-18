@@ -480,7 +480,45 @@ public sealed class RequestCompressionHttpMessageHandlerTests
     }
 
     [TestMethod]
-    public async Task SendAsyncWithDiscoveryWhenEncodingIsSupported()
+    public async Task SendAsyncWithDiscoveryWhenEncodingIsSupported1()
+    {
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
+        {
+            Assert.IsNotNull(request);
+
+            var response = new HttpResponseMessage();
+
+            response.Headers.TryAddWithoutValidation("Accept-Encoding", "a");
+
+            return response;
+        }
+
+        var compressionProvider0 = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
+        var logger = NullLogger.Instance;
+        var options = new RequestCompressionHttpMessageHandlerOptions();
+
+        compressionProviderRegistry
+            .Setup(o => o.TryGetProvider("a", out compressionProvider0))
+            .Returns(true);
+
+        options.EncodingName = "identity";
+
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
+        var httpRequestMessage = new HttpRequestMessage();
+        var encodingContext = new RequerstCompressionEncodingContext();
+
+        httpRequestMessage.Method = HttpMethod.Options;
+        httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
+
+        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.AreEqual("a", encodingContext.EncodingName);
+    }
+
+    [TestMethod]
+    public async Task SendAsyncWithDiscoveryWhenEncodingIsSupportedN()
     {
         static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
         {
