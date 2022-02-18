@@ -110,6 +110,10 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         {
             return;
         }
+        if (encodingContext is null)
+        {
+            return;
+        }
 
         // RFC 7231 "Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content":
         //

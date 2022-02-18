@@ -39,7 +39,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -82,7 +84,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -126,7 +130,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.CompressionEnabled, false);
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -170,7 +176,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.CompressionEnabled, true);
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -214,7 +222,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingName, "a");
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -256,7 +266,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -298,7 +310,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -341,7 +355,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content.Headers.ContentEncoding.Add("identity");
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -385,7 +401,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.CompressionEnabled, false);
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -429,7 +447,38 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Content.Headers.LastModified = DateTimeOffset.UnixEpoch;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.CompressionEnabled, true);
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
+    }
+
+    [TestMethod]
+    public async Task SendAsyncWithDiscoveryWhenContextIsNull()
+    {
+        static async Task<HttpResponseMessage> PrimaryHandler(HttpRequestMessage request)
+        {
+            Assert.IsNotNull(request);
+
+            return new();
+        }
+
+        var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
+        var logger = NullLogger.Instance;
+        var options = new RequestCompressionHttpMessageHandlerOptions();
+
+        options.EncodingName = "identity";
+
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
+        var httpRequestMessage = new HttpRequestMessage();
+        var encodingContext = new RequerstCompressionEncodingContext();
+
+        httpRequestMessage.Method = HttpMethod.Options;
+        httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, null);
+
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+
+        Assert.IsNotNull(httpResponseMessage);
     }
 
     [TestMethod]
@@ -474,8 +523,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
+        Assert.IsNotNull(httpResponseMessage);
         Assert.AreEqual(null, encodingContext.EncodingName);
     }
 
@@ -512,8 +562,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
+        Assert.IsNotNull(httpResponseMessage);
         Assert.AreEqual("a", encodingContext.EncodingName);
     }
 
@@ -560,8 +611,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
+        Assert.IsNotNull(httpResponseMessage);
         Assert.AreEqual("a", encodingContext.EncodingName);
     }
 
@@ -598,8 +650,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
+        Assert.IsNotNull(httpResponseMessage);
         Assert.AreEqual(null, encodingContext.EncodingName);
     }
 
@@ -636,8 +689,9 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
 
-        await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
+        var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
+        Assert.IsNotNull(httpResponseMessage);
         Assert.AreEqual("a", encodingContext.EncodingName);
     }
 
