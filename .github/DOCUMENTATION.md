@@ -54,7 +54,7 @@ var request = new HttpRequestMessage(HttpMethod.Post, "/resource");
 request.Content = new StringContent("Hello World!");
 request.Options.SetCompressionEnabled(true);
 
-await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+await httpClient.SendAsync(request);
 ```
 Discovery of compression format supported by server (RFC 7694):
 ```cs
@@ -63,10 +63,10 @@ var request2 = new HttpRequestMessage(HttpMethod.Post, "/resource");
 
 request1.Options.AddCompressionDiscovery(out var encodingContext);
 
-await httpClient.SendAsync(request1, cancellationToken).ConfigureAwait(false);
+await httpClient.SendAsync(request1);
 
 request2.Content = JsonContent.Create("Hello World!");
 request2.Options.SetCompressionEncoding(encodingContext.EncodingName);
 
-await httpClient.SendAsync(request2, cancellationToken).ConfigureAwait(false);
+await httpClient.SendAsync(request2);
 ```
