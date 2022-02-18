@@ -1,4 +1,5 @@
 ﻿#pragma warning disable CA1822
+#pragma warning disable IDE1006
 
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
@@ -11,7 +12,7 @@ namespace Anemonis.Extensions.RequestCompression.PerfTests;
 
 public class RequestCompressionHttpMessageHandlerCodingTests
 {
-    private static readonly Task<HttpResponseMessage> _httpResponseTask = Task.FromResult(new HttpResponseMessage());
+    private static readonly HttpResponseMessage _httpResponse = new();
     private static readonly DelegatingHandlerAdapter _httpHandlerAdapter = CreateHttpHandlerAdapter();
 
     private static DelegatingHandlerAdapter CreateHttpHandlerAdapter()
@@ -30,9 +31,11 @@ public class RequestCompressionHttpMessageHandlerCodingTests
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static Task<HttpResponseMessage> PrimaryHttpHandler(HttpRequestMessage request)
+    private static async Task<HttpResponseMessage> PrimaryHttpHandler(HttpRequestMessage request)
     {
-        return _httpResponseTask;
+        await request.Content!.ReadAsStreamAsync();
+
+        return _httpResponse;
     }
 
     [Benchmark(Description = "enc:n", Baseline = true)]
