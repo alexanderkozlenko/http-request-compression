@@ -129,27 +129,28 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             return;
         }
 
-        if (!response.Headers.NonValidated.TryGetValues("Accept-Encoding", out var headerValuesNonValidated))
+        if (!response.Headers.NonValidated.TryGetValues("Accept-Encoding", out var responseHeaderValues))
         {
             return;
         }
-        if (headerValuesNonValidated.Count == 0)
+        if (responseHeaderValues.Count == 0)
         {
             return;
         }
 
-        var requestHeadersParser = HttpRequestMessagePool.Shared.Get();
+        var headerValues = AcceptEncodingValueCollectionPool.Shared.Get();
 
-        requestHeadersParser.Headers.TryAddWithoutValidation("Accept-Encoding", headerValuesNonValidated);
-
-        var headerValues = requestHeadersParser.Headers.AcceptEncoding;
+        foreach (var headerValue in responseHeaderValues)
+        {
+            headerValues.TryParseAdd(headerValue);
+        }
 
         if (headerValues.Count != 0)
         {
             encodingContext.EncodingName = SelectSupportedContentCoding(headerValues);
         }
 
-        HttpRequestMessagePool.Shared.Return(requestHeadersParser);
+        AcceptEncodingValueCollectionPool.Shared.Return(headerValues);
     }
 
     private string? SelectSupportedContentCoding(ICollection<StringWithQualityHeaderValue> headerValues)
@@ -168,7 +169,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
                 return _options.EncodingName;
             }
         }
-        else
+        else if (headerValues.Count > 1)
         {
             var priorityQueue = ContentCodingPriorityQueuePool.Shared.Get();
             var priorityQueueIsRetainable = headerValues.Count <= ContentCodingPriorityQueuePooledObjectPolicy.MaximumRetainedCapacity;

@@ -8,6 +8,10 @@ internal sealed class ContentCodingPriorityQueuePooledObjectPolicy : PooledObjec
 {
     public const int MaximumRetainedCapacity = 16;
 
+    public ContentCodingPriorityQueuePooledObjectPolicy()
+    {
+    }
+
     public sealed override PriorityQueue<string, double> Create()
     {
         return new(MaximumRetainedCapacity);
@@ -15,6 +19,8 @@ internal sealed class ContentCodingPriorityQueuePooledObjectPolicy : PooledObjec
 
     public sealed override bool Return(PriorityQueue<string, double> obj)
     {
+        ArgumentNullException.ThrowIfNull(obj);
+
         obj.Clear();
 
         return true;
