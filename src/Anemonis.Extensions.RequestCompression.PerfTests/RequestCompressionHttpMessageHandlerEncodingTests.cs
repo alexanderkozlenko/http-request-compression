@@ -1,25 +1,25 @@
 ﻿#pragma warning disable CA1822
-#pragma warning disable IDE1006
 
 using System.IO.Compression;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Anemonis.Extensions.RequestCompression.PerfTests.TestStubs;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Anemonis.Extensions.RequestCompression.PerfTests;
 
-public class RequestCompressionHttpMessageHandlerCodingTests
+public class RequestCompressionHttpMessageHandlerEncodingTests
 {
-    private static readonly HttpResponseMessage _httpResponse = new();
+    private static readonly MediaTypeHeaderValue _contentType0 = new("application/bson");
+    private static readonly MediaTypeHeaderValue _contentType1 = new("application/json");
     private static readonly DelegatingHandlerAdapter _httpHandlerAdapter = CreateHttpHandlerAdapter();
 
     private static DelegatingHandlerAdapter CreateHttpHandlerAdapter()
     {
         var compressionProviderRegistry = new TestRequestCompressionProviderRegistry();
-        var logger = NullLogger.Instance;
         var httpMessageHandlerOptions = new RequestCompressionHttpMessageHandlerOptions();
+        var logger = NullLogger.Instance;
 
         httpMessageHandlerOptions.EncodingName = "e";
         httpMessageHandlerOptions.CompressionLevel = CompressionLevel.NoCompression;
@@ -31,31 +31,39 @@ public class RequestCompressionHttpMessageHandlerCodingTests
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static async Task<HttpResponseMessage> PrimaryHttpHandler(HttpRequestMessage request)
+    private static HttpResponseMessage PrimaryHttpHandler(HttpRequestMessage request)
     {
-        await request.Content!.ReadAsStreamAsync();
+        request.Content!.ReadAsStringAsync().GetAwaiter().GetResult();
 
-        return _httpResponse;
+        return HttpResponseMessagePool.Shared.Get();
     }
 
     [Benchmark(Description = "enc:n", Baseline = true)]
-    public Task BenchmarkC0()
+    public void BenchmarkC0()
     {
-        var request = new HttpRequestMessage();
+        var request = HttpRequestMessagePool.Shared.Get();
 
-        request.Content = new StringContent("", Encoding.UTF8, "application/xml");
+        request.Content = new StreamContent(Stream.Null);
+        request.Content.Headers.ContentType = _contentType0;
 
-        return _httpHandlerAdapter.SendAsync(request, default);
+        var response = _httpHandlerAdapter.InvokeSend(request, default);
+
+        HttpResponseMessagePool.Shared.Return(response);
+        HttpRequestMessagePool.Shared.Return(request);
     }
 
     [Benchmark(Description = "enc:y")]
-    public Task BenchmarkC1()
+    public void BenchmarkC1()
     {
-        var request = new HttpRequestMessage();
+        var request = HttpRequestMessagePool.Shared.Get();
 
-        request.Content = new StringContent("", Encoding.UTF8, "application/json");
+        request.Content = new StreamContent(Stream.Null);
+        request.Content.Headers.ContentType = _contentType1;
 
-        return _httpHandlerAdapter.SendAsync(request, default);
+        var response = _httpHandlerAdapter.InvokeSend(request, default);
+
+        HttpResponseMessagePool.Shared.Return(response);
+        HttpRequestMessagePool.Shared.Return(request);
     }
 
     private sealed class TestRequestCompressionProviderRegistry : IRequestCompressionProviderRegistry

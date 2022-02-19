@@ -2,15 +2,20 @@
 
 internal sealed class DelegatingPrimaryHandler : HttpMessageHandler
 {
-    private readonly Func<HttpRequestMessage, Task<HttpResponseMessage>> _handler;
+    private readonly Func<HttpRequestMessage, HttpResponseMessage> _handler;
 
-    public DelegatingPrimaryHandler(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler)
+    public DelegatingPrimaryHandler(Func<HttpRequestMessage, HttpResponseMessage> handler)
     {
         _handler = handler;
     }
 
-    protected sealed override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected sealed override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         return _handler.Invoke(request);
+    }
+
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        throw new NotSupportedException();
     }
 }
