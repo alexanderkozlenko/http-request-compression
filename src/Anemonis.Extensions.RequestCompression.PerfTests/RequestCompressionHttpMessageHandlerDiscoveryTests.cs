@@ -24,7 +24,7 @@ public class RequestCompressionHttpMessageHandlerDiscoveryTests
         httpMessageHandlerOptions.CompressionLevel = CompressionLevel.NoCompression;
         httpMessageHandlerOptions.MediaTypes.Add("text/plain");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry, logger, httpMessageHandlerOptions);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry, httpMessageHandlerOptions, logger);
 
         return new DelegatingHandlerAdapter(httpMessageHandler, primaryHandler);
     }

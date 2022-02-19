@@ -35,7 +35,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.EncodingName = "a";
         options.CompressionLevel = CompressionLevel.NoCompression;
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -76,7 +76,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("text/plain");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -121,7 +121,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("text/plain");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -167,7 +167,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("text/plain");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -213,7 +213,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("text/plain");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -258,7 +258,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("text/plain");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -302,7 +302,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("text/plain");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -347,7 +347,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("application/json");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -392,7 +392,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("application/json");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -438,7 +438,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("application/json");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -468,7 +468,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         options.EncodingName = "identity";
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
         var encodingContext = new RequerstCompressionEncodingContext();
@@ -515,7 +515,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         options.EncodingName = "identity";
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
         var encodingContext = new RequerstCompressionEncodingContext();
@@ -554,7 +554,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         options.EncodingName = "identity";
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
         var encodingContext = new RequerstCompressionEncodingContext();
@@ -603,7 +603,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         options.EncodingName = "identity";
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
         var encodingContext = new RequerstCompressionEncodingContext();
@@ -642,7 +642,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         options.EncodingName = "a";
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
         var encodingContext = new RequerstCompressionEncodingContext();
@@ -681,7 +681,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         options.EncodingName = "a";
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, logger, options);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
         var encodingContext = new RequerstCompressionEncodingContext();

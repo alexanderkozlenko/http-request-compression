@@ -146,7 +146,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             .AddRequestCompression(options =>
             {
                 options.Providers.Clear();
-                options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<BrotliRequestCompressionProvider>();
                 options.EncodingName = "identity";
                 options.CompressionLevel = CompressionLevel.SmallestSize;
                 options.MediaTypes.Clear();
@@ -196,7 +196,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             .AddRequestCompression(options =>
             {
                 options.Providers.Clear();
-                options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<BrotliRequestCompressionProvider>();
                 options.EncodingName = "identity";
                 options.CompressionLevel = CompressionLevel.SmallestSize;
                 options.MediaTypes.Clear();
@@ -246,7 +246,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             .AddRequestCompression(options =>
             {
                 options.Providers.Clear();
-                options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<BrotliRequestCompressionProvider>();
                 options.EncodingName = "identity";
                 options.CompressionLevel = CompressionLevel.SmallestSize;
                 options.MediaTypes.Clear();

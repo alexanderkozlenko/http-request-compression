@@ -6,9 +6,9 @@ using System.IO.Compression;
 
 namespace Anemonis.Extensions.RequestCompression;
 
-public sealed class BrotliCompressionProvider : IRequestCompressionProvider
+public sealed class GzipRequestCompressionProvider : IRequestCompressionProvider
 {
-    public BrotliCompressionProvider()
+    public GzipRequestCompressionProvider()
     {
     }
 
@@ -16,14 +16,14 @@ public sealed class BrotliCompressionProvider : IRequestCompressionProvider
     {
         ArgumentNullException.ThrowIfNull(outputStreeam);
 
-        return new BrotliStream(outputStreeam, compressionLevel, leaveOpen: true);
+        return new GZipStream(outputStreeam, compressionLevel, leaveOpen: true);
     }
 
     public string EncodingName
     {
         get
         {
-            return "br";
+            return "gzip";
         }
     }
 }

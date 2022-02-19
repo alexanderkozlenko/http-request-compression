@@ -10,27 +10,27 @@ namespace Anemonis.Extensions.RequestCompression;
 public sealed class RequestCompressionHttpMessageHandlerFactory : IRequestCompressionHttpMessageHandlerFactory
 {
     private readonly IRequestCompressionProviderRegistry _compressionProviderRegistry;
+    private readonly IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions> _optionsMonitor;
     private readonly ILoggerFactory _loggerFactory;
-    private readonly IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions> _options;
 
-    public RequestCompressionHttpMessageHandlerFactory(IRequestCompressionProviderRegistry compressionProviderRegistry, ILoggerFactory loggerFactory, IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions> options)
+    public RequestCompressionHttpMessageHandlerFactory(IRequestCompressionProviderRegistry compressionProviderRegistry, IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions> optionsMonitor, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(compressionProviderRegistry);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(loggerFactory);
-        ArgumentNullException.ThrowIfNull(options);
 
         _compressionProviderRegistry = compressionProviderRegistry;
+        _optionsMonitor = optionsMonitor;
         _loggerFactory = loggerFactory;
-        _options = options;
     }
 
     public DelegatingHandler CreateHandler(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
 
+        var compressionOptions = _optionsMonitor.Get(name);
         var logger = _loggerFactory.CreateLogger<RequestCompressionHttpMessageHandler>();
-        var options = _options.Get(name);
 
-        return new RequestCompressionHttpMessageHandler(_compressionProviderRegistry, logger, options);
+        return new RequestCompressionHttpMessageHandler(_compressionProviderRegistry, compressionOptions, logger);
     }
 }

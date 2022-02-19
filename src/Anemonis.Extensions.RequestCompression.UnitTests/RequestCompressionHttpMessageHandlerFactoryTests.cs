@@ -15,7 +15,7 @@ public sealed class RequestCompressionHttpMessageHandlerFactoryTests
         var loggerFactory = NullLoggerFactory.Instance;
         var optionsMonitor = new Mock<IOptionsMonitor<RequestCompressionHttpMessageHandlerOptions>>(MockBehavior.Strict);
 
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(providerRegistry.Object, loggerFactory, optionsMonitor.Object);
+        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(providerRegistry.Object, optionsMonitor.Object, loggerFactory);
 
         Assert.ThrowsException<ArgumentNullException>(() =>
             httpMessageHandlerFactory.CreateHandler(null!));
@@ -33,7 +33,7 @@ public sealed class RequestCompressionHttpMessageHandlerFactoryTests
             .Setup(o => o.Get(Options.DefaultName))
             .Returns(options);
 
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(providerRegistry.Object, loggerFactory, optionsMonitor.Object);
+        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(providerRegistry.Object, optionsMonitor.Object, loggerFactory);
         var httpMessageHandler = httpMessageHandlerFactory.CreateHandler(Options.DefaultName);
 
         Assert.IsNotNull(httpMessageHandler);
@@ -51,7 +51,7 @@ public sealed class RequestCompressionHttpMessageHandlerFactoryTests
             .Setup(o => o.Get("name"))
             .Returns(options);
 
-        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(providerRegistry.Object, loggerFactory, optionsMonitor.Object);
+        var httpMessageHandlerFactory = new RequestCompressionHttpMessageHandlerFactory(providerRegistry.Object, optionsMonitor.Object, loggerFactory);
         var httpMessageHandler = httpMessageHandlerFactory.CreateHandler("name");
 
         Assert.IsNotNull(httpMessageHandler);

@@ -11,18 +11,18 @@ namespace Anemonis.Extensions.RequestCompression;
 public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 {
     private readonly IRequestCompressionProviderRegistry _compressionProviderRegistry;
+    private readonly RequestCompressionHttpMessageHandlerOptions _compressionOptions;
     private readonly ILogger _logger;
-    private readonly RequestCompressionHttpMessageHandlerOptions _options;
 
-    public RequestCompressionHttpMessageHandler(IRequestCompressionProviderRegistry compressionProviderRegistry, ILogger logger, RequestCompressionHttpMessageHandlerOptions options)
+    public RequestCompressionHttpMessageHandler(IRequestCompressionProviderRegistry compressionProviderRegistry, RequestCompressionHttpMessageHandlerOptions compressionOptions, ILogger logger)
     {
         ArgumentNullException.ThrowIfNull(compressionProviderRegistry);
+        ArgumentNullException.ThrowIfNull(compressionOptions);
         ArgumentNullException.ThrowIfNull(logger);
-        ArgumentNullException.ThrowIfNull(options);
 
         _compressionProviderRegistry = compressionProviderRegistry;
+        _compressionOptions = compressionOptions;
         _logger = logger;
-        _options = options;
     }
 
     private void ApplySelectedContentCoding(HttpRequestMessage request)
@@ -37,7 +37,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         }
         if (!request.Options.TryGetValue(RequestCompressionOptionKeys.CompressionEnabled, out var compressionEnabled))
         {
-            compressionEnabled = ContentHasSupportedType(requestContent, _options.MediaTypes);
+            compressionEnabled = ContentHasSupportedType(requestContent, _compressionOptions.MediaTypes);
         }
         if (!compressionEnabled)
         {
@@ -45,7 +45,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         }
         if (!request.Options.TryGetValue(RequestCompressionOptionKeys.EncodingName, out var encodingName))
         {
-            encodingName = _options.EncodingName;
+            encodingName = _compressionOptions.EncodingName;
         }
         if (encodingName is null)
         {
@@ -61,7 +61,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         }
         if (!request.Options.TryGetValue(RequestCompressionOptionKeys.CompressionLevel, out var compressionLevel))
         {
-            compressionLevel = _options.CompressionLevel;
+            compressionLevel = _compressionOptions.CompressionLevel;
         }
 
         request.Content = CreateCodingContent(requestContent, compressionProvider, compressionLevel);
@@ -170,7 +170,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             }
             if (string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
             {
-                return _options.EncodingName;
+                return _compressionOptions.EncodingName;
             }
         }
         else if (headerValues.Count > 1)
@@ -205,7 +205,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
                         ContentCodingPriorityQueuePool.Shared.Return(priorityQueue);
                     }
 
-                    return _options.EncodingName;
+                    return _compressionOptions.EncodingName;
                 }
 
                 priorityQueue.Dequeue();

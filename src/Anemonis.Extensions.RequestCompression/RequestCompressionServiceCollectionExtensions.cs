@@ -54,8 +54,8 @@ public static class RequestCompressionServiceCollectionExtensions
 
     private static void Configure(RequestCompressionOptions options)
     {
-        options.Providers.Add<BrotliCompressionProvider>();
-        options.Providers.Add<GzipCompressionProvider>();
+        options.Providers.Add<BrotliRequestCompressionProvider>();
+        options.Providers.Add<GzipRequestCompressionProvider>();
     }
 
     private static void ConfigureHandler(RequestCompressionHttpMessageHandlerOptions options)

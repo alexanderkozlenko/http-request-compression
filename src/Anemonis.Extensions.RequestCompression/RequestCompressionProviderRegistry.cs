@@ -10,7 +10,7 @@ public sealed class RequestCompressionProviderRegistry : IRequestCompressionProv
 {
     private readonly IOptions<RequestCompressionOptions> _options;
 
-    private volatile Dictionary<string, IRequestCompressionProvider?>? _providers;
+    private volatile Dictionary<string, IRequestCompressionProvider?>? _compressionProviders;
 
     public RequestCompressionProviderRegistry(IOptions<RequestCompressionOptions> options)
     {
@@ -19,27 +19,29 @@ public sealed class RequestCompressionProviderRegistry : IRequestCompressionProv
         _options = options;
     }
 
-    private static Dictionary<string, IRequestCompressionProvider?> CreateProviders(ICollection<Type> providerTypes)
+    private static Dictionary<string, IRequestCompressionProvider?> CreateCompressionProviders(RequestCompressionProviderCollection compressionProviderTypes)
     {
-        var providers = new Dictionary<string, IRequestCompressionProvider?>(providerTypes.Count + 1, StringComparer.OrdinalIgnoreCase)
+        var compressionProvidersCount = compressionProviderTypes.Count + 1;
+
+        var compressionProviders = new Dictionary<string, IRequestCompressionProvider?>(compressionProvidersCount, StringComparer.OrdinalIgnoreCase)
         {
             [ContentCodingTokens.Identity] = default,
         };
 
-        foreach (var providerType in providerTypes)
+        foreach (var compressionProviderType in compressionProviderTypes)
         {
-            var provider = (IRequestCompressionProvider)Activator.CreateInstance(providerType)!;
-            var encodingName = provider.EncodingName;
+            var compressionProvider = (IRequestCompressionProvider)Activator.CreateInstance(compressionProviderType)!;
+            var encodingName = compressionProvider.EncodingName;
 
             if ((encodingName is not { Length: > 0 }) || !ContentCodingTokenIsSupported(encodingName))
             {
-                throw new InvalidOperationException($"The encoding name for provider '{providerType}' is invalid.");
+                throw new InvalidOperationException($"The encoding name for provider '{compressionProviderType}' is invalid.");
             }
 
-            providers[encodingName] = provider;
+            compressionProviders[encodingName] = compressionProvider;
         }
 
-        return providers;
+        return compressionProviders;
     }
 
     private static bool ContentCodingTokenIsSupported(string encodingName)
@@ -49,12 +51,12 @@ public sealed class RequestCompressionProviderRegistry : IRequestCompressionProv
             !string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.Ordinal);
     }
 
-    public bool TryGetProvider(string encodingName, out IRequestCompressionProvider? provider)
+    public bool TryGetProvider(string encodingName, out IRequestCompressionProvider? compressionProvider)
     {
         ArgumentNullException.ThrowIfNull(encodingName);
 
-        _providers ??= CreateProviders(_options.Value.Providers);
+        _compressionProviders ??= CreateCompressionProviders(_options.Value.Providers);
 
-        return _providers.TryGetValue(encodingName, out provider);
+        return _compressionProviders.TryGetValue(encodingName, out compressionProvider);
     }
 }

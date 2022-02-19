@@ -25,7 +25,7 @@ public class RequestCompressionHttpMessageHandlerCodingTests
         httpMessageHandlerOptions.CompressionLevel = CompressionLevel.NoCompression;
         httpMessageHandlerOptions.MediaTypes.Add("application/json");
 
-        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry, logger, httpMessageHandlerOptions);
+        var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry, httpMessageHandlerOptions, logger);
 
         return new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHttpHandler);
     }
