@@ -2,6 +2,7 @@
 
 #pragma warning disable CS1591
 
+using System.Buffers;
 using System.IO.Compression;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
@@ -101,6 +102,18 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         return encodedContent;
     }
 
+    private static double GetCanonicalQualityValue(double? value)
+    {
+        if (value is null)
+        {
+            return QualityValues.MaxValue;
+        }
+        else
+        {
+            return Math.Round(value.Value, 3, MidpointRounding.AwayFromZero);
+        }
+    }
+
     private void FindSupportedContentCoding(HttpRequestMessage request, HttpResponseMessage response)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -114,6 +127,8 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         {
             return;
         }
+
+        encodingContext.EncodingName = null;
 
         // RFC 7231 "Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content":
         //
@@ -149,10 +164,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             headerValues.TryParseAdd(headerValue);
         }
 
-        if (headerValues.Count != 0)
-        {
-            encodingContext.EncodingName = SelectSupportedContentCoding(headerValues);
-        }
+        encodingContext.EncodingName = SelectSupportedContentCoding(headerValues);
 
         AcceptEncodingValueCollectionPool.Shared.Return(headerValues);
     }
@@ -161,60 +173,65 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
     {
         if (headerValues.Count == 1)
         {
-            var headerValue = headerValues.First();
-            var encodingName = headerValue.Value;
+            var headerValuesArray = ArrayPool<StringWithQualityHeaderValue>.Shared.Rent(1);
 
-            if (_compressionProviderRegistry.TryGetProvider(encodingName, out var compressionProvider))
+            headerValues.CopyTo(headerValuesArray, 0);
+
+            var headerValue = headerValuesArray[0];
+
+            ArrayPool<StringWithQualityHeaderValue>.Shared.Return(headerValuesArray);
+
+            var currentName = headerValue.Value;
+            var currentQuality = GetCanonicalQualityValue(headerValue.Quality);
+
+            if (currentQuality > QualityValues.MinValue)
             {
-                return compressionProvider?.EncodingName;
-            }
-            if (string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
-            {
-                return _compressionOptions.EncodingName;
+                if (_compressionProviderRegistry.TryGetProvider(currentName, out var compressionProvider))
+                {
+                    return compressionProvider?.EncodingName;
+                }
+                if (string.Equals(currentName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
+                {
+                    return _compressionOptions.EncodingName;
+                }
             }
         }
         else if (headerValues.Count > 1)
         {
-            var priorityQueue = ContentCodingPriorityQueuePool.Shared.Get();
-            var priorityQueueIsRetainable = headerValues.Count <= ContentCodingPriorityQueuePooledObjectPolicy.MaximumRetainedCapacity;
-
-            priorityQueue.EnsureCapacity(headerValues.Count);
+            var encodingName = default(string);
+            var encodingQuality = QualityValues.MinValue;
 
             foreach (var headerValue in headerValues)
             {
-                priorityQueue.Enqueue(headerValue.Value, -(headerValue.Quality ?? 1D));
-            }
+                var currentName = headerValue.Value;
+                var currentQuality = GetCanonicalQualityValue(headerValue.Quality);
 
-            while (priorityQueue.Count != 0)
-            {
-                var encodingName = priorityQueue.Peek();
-
-                if (_compressionProviderRegistry.TryGetProvider(encodingName, out var compressionProvider))
+                if (currentQuality > encodingQuality)
                 {
-                    if (priorityQueueIsRetainable)
+                    if (_compressionProviderRegistry.TryGetProvider(currentName, out var compressionProvider))
                     {
-                        ContentCodingPriorityQueuePool.Shared.Return(priorityQueue);
-                    }
+                        encodingName = compressionProvider?.EncodingName;
+                        encodingQuality = currentQuality;
 
-                    return compressionProvider?.EncodingName;
-                }
-                if (string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
-                {
-                    if (priorityQueueIsRetainable)
+                        if (encodingQuality >= QualityValues.MaxValue)
+                        {
+                            break;
+                        }
+                    }
+                    else if (string.Equals(encodingName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
                     {
-                        ContentCodingPriorityQueuePool.Shared.Return(priorityQueue);
+                        encodingName = _compressionOptions.EncodingName;
+                        encodingQuality = currentQuality;
+
+                        if (encodingQuality >= QualityValues.MaxValue)
+                        {
+                            break;
+                        }
                     }
-
-                    return _compressionOptions.EncodingName;
                 }
-
-                priorityQueue.Dequeue();
             }
 
-            if (priorityQueueIsRetainable)
-            {
-                ContentCodingPriorityQueuePool.Shared.Return(priorityQueue);
-            }
+            return encodingName;
         }
 
         return null;

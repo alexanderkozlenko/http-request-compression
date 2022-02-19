@@ -490,7 +490,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
             var response = new HttpResponseMessage();
 
-            response.Headers.TryAddWithoutValidation("Accept-Encoding", "c, a; q=0.9, d; q=0.9, b; q=0.8");
+            response.Headers.TryAddWithoutValidation("Accept-Encoding", "c; q=0.9, a; q=0.8, d; q=0.7, b; q=0.6");
 
             return response;
         }
@@ -577,7 +577,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
             var response = new HttpResponseMessage();
 
-            response.Headers.TryAddWithoutValidation("Accept-Encoding", "c, a; q=0.9, d; q=0.9, b; q=0.8");
+            response.Headers.TryAddWithoutValidation("Accept-Encoding", "c; q=0.9, a; q=0.8, d; q=0.7, b; q=0.6");
 
             return response;
         }

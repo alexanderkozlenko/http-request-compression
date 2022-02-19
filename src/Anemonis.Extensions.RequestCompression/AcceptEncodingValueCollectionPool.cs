@@ -7,9 +7,9 @@ namespace Anemonis.Extensions.RequestCompression;
 
 internal static class AcceptEncodingValueCollectionPool
 {
-    private static readonly ObjectPool<HttpHeaderValueCollection<StringWithQualityHeaderValue>> _shared = CreateShared();
+    private static readonly ObjectPool<HttpHeaderValueCollection<StringWithQualityHeaderValue>> _shared = Create();
 
-    private static ObjectPool<HttpHeaderValueCollection<StringWithQualityHeaderValue>> CreateShared()
+    private static ObjectPool<HttpHeaderValueCollection<StringWithQualityHeaderValue>> Create()
     {
         var objectPoolProvider = new DefaultObjectPoolProvider();
         var objectPoolPolicy = new AcceptEncodingValueCollectionPooledObjectPolicy();
