@@ -2,7 +2,6 @@
 
 #pragma warning disable CS1591
 
-using System.Buffers;
 using System.IO.Compression;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
@@ -148,41 +147,56 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             return;
         }
 
-        if (!response.Headers.NonValidated.TryGetValues("Accept-Encoding", out var responseHeaderValues))
+        if (!response.Headers.NonValidated.TryGetValues("Accept-Encoding", out var headerStringValues))
         {
             return;
         }
-        if (responseHeaderValues.Count == 0)
+        if (headerStringValues.Count == 0)
         {
             return;
         }
 
-        var headerValues = AcceptEncodingValueCollectionPool.Shared.Get();
+        var headerValues = default(List<(string, double)>);
 
-        foreach (var headerValue in responseHeaderValues)
+        foreach (var headerStringValue in headerStringValues)
         {
-            headerValues.TryParseAdd(headerValue);
+            if (headerStringValue is null)
+            {
+                continue;
+            }
+
+            var headerValueTokens = TokenizeHeaderValue(headerStringValue);
+
+            if (headerValueTokens.Length == 0)
+            {
+                continue;
+            }
+
+            headerValues ??= AcceptEncodingValueCollectionPool.Shared.Get();
+            headerValues.EnsureCapacity(headerValues.Count + headerValueTokens.Length);
+
+            for (var i = 0; i < headerValueTokens.Length; i++)
+            {
+                if (StringWithQualityHeaderValue.TryParse(headerValueTokens[i], out var headerValue))
+                {
+                    headerValues.Add((headerValue.Value, GetCanonicalQualityValue(headerValue.Quality)));
+                }
+            }
         }
 
-        encodingContext.EncodingName = SelectSupportedContentCoding(headerValues);
+        if (headerValues is not null)
+        {
+            encodingContext.EncodingName = SelectSupportedContentCoding(headerValues);
 
-        AcceptEncodingValueCollectionPool.Shared.Return(headerValues);
+            AcceptEncodingValueCollectionPool.Shared.Return(headerValues);
+        }
     }
 
-    private string? SelectSupportedContentCoding(ICollection<StringWithQualityHeaderValue> headerValues)
+    private string? SelectSupportedContentCoding(List<(string, double)> headerValues)
     {
         if (headerValues.Count == 1)
         {
-            var headerValuesArray = ArrayPool<StringWithQualityHeaderValue>.Shared.Rent(1);
-
-            headerValues.CopyTo(headerValuesArray, 0);
-
-            var headerValue = headerValuesArray[0];
-
-            ArrayPool<StringWithQualityHeaderValue>.Shared.Return(headerValuesArray);
-
-            var currentName = headerValue.Value;
-            var currentQuality = GetCanonicalQualityValue(headerValue.Quality);
+            var (currentName, currentQuality) = headerValues[0];
 
             if (currentQuality > QualityValues.MinValue)
             {
@@ -201,11 +215,8 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             var encodingName = default(string);
             var encodingQuality = QualityValues.MinValue;
 
-            foreach (var headerValue in headerValues)
+            foreach (var (currentName, currentQuality) in headerValues)
             {
-                var currentName = headerValue.Value;
-                var currentQuality = GetCanonicalQualityValue(headerValue.Quality);
-
                 if (currentQuality > encodingQuality)
                 {
                     if (_compressionProviderRegistry.TryGetProvider(currentName, out var compressionProvider))
@@ -257,5 +268,10 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         FindSupportedContentCoding(request, response);
 
         return response;
+    }
+
+    private static string[] TokenizeHeaderValue(string value)
+    {
+        return value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 }

@@ -1,26 +1,28 @@
 ﻿// © Oleksandr Kozlenko. Licensed under the MIT license.
 
-using System.Net.Http.Headers;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Anemonis.Extensions.RequestCompression;
 
-internal sealed class AcceptEncodingValueCollectionPooledObjectPolicy : PooledObjectPolicy<HttpHeaderValueCollection<StringWithQualityHeaderValue>>
+internal sealed class AcceptEncodingValueCollectionPooledObjectPolicy : PooledObjectPolicy<List<(string, double)>>
 {
     public AcceptEncodingValueCollectionPooledObjectPolicy()
     {
     }
 
-    public sealed override HttpHeaderValueCollection<StringWithQualityHeaderValue> Create()
+    public sealed override List<(string, double)> Create()
     {
-        using var httpRequestMessage = new HttpRequestMessage();
-
-        return httpRequestMessage.Headers.AcceptEncoding;
+        return new();
     }
 
-    public sealed override bool Return(HttpHeaderValueCollection<StringWithQualityHeaderValue> obj)
+    public sealed override bool Return(List<(string, double)> obj)
     {
         ArgumentNullException.ThrowIfNull(obj);
+
+        if (obj.Capacity > 16)
+        {
+            return false;
+        }
 
         obj.Clear();
 

@@ -1,15 +1,14 @@
 ﻿// © Oleksandr Kozlenko. Licensed under the MIT license.
 
-using System.Net.Http.Headers;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Anemonis.Extensions.RequestCompression;
 
 internal static class AcceptEncodingValueCollectionPool
 {
-    private static readonly ObjectPool<HttpHeaderValueCollection<StringWithQualityHeaderValue>> _shared = Create();
+    private static readonly ObjectPool<List<(string, double)>> _shared = Create();
 
-    private static ObjectPool<HttpHeaderValueCollection<StringWithQualityHeaderValue>> Create()
+    private static ObjectPool<List<(string, double)>> Create()
     {
         var objectPoolProvider = new DefaultObjectPoolProvider();
         var objectPoolPolicy = new AcceptEncodingValueCollectionPooledObjectPolicy();
@@ -18,7 +17,7 @@ internal static class AcceptEncodingValueCollectionPool
         return objectPool;
     }
 
-    public static ObjectPool<HttpHeaderValueCollection<StringWithQualityHeaderValue>> Shared
+    public static ObjectPool<List<(string, double)>> Shared
     {
         get
         {
