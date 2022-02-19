@@ -42,7 +42,7 @@ public static class RequestCompressionHttpRequestOptionsExtensions
     /// <summary>Adds a context to store information about HTTP request compression format supported by client and server.</summary>
     /// <param name="context">The context with information about supported compression format.</param>
     /// <exception cref="ArgumentNullException"><paramref name="options" /> is <see langword="null" />.</exception>
-    public static void AddCompressionDiscovery(this HttpRequestOptions options, out RequerstCompressionEncodingContext context)
+    public static void AddCompressionDiscovery(this HttpRequestOptions options, out RequestCompressionEncodingContext context)
     {
         ArgumentNullException.ThrowIfNull(options);
 

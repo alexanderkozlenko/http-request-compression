@@ -4,9 +4,9 @@
 
 namespace Anemonis.Extensions.RequestCompression;
 
-public sealed class RequerstCompressionEncodingContext
+public sealed class RequestCompressionEncodingContext
 {
-    public RequerstCompressionEncodingContext()
+    public RequestCompressionEncodingContext()
     {
     }
 

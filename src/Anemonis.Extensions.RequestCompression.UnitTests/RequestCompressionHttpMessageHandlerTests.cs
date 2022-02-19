@@ -471,7 +471,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
-        var encodingContext = new RequerstCompressionEncodingContext();
+        var encodingContext = new RequestCompressionEncodingContext();
 
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, null);
@@ -518,7 +518,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
-        var encodingContext = new RequerstCompressionEncodingContext();
+        var encodingContext = new RequestCompressionEncodingContext();
 
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
@@ -557,7 +557,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
-        var encodingContext = new RequerstCompressionEncodingContext();
+        var encodingContext = new RequestCompressionEncodingContext();
 
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
@@ -606,7 +606,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
-        var encodingContext = new RequerstCompressionEncodingContext();
+        var encodingContext = new RequestCompressionEncodingContext();
 
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
@@ -645,7 +645,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
-        var encodingContext = new RequerstCompressionEncodingContext();
+        var encodingContext = new RequestCompressionEncodingContext();
 
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);
@@ -684,7 +684,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
         var httpRequestMessage = new HttpRequestMessage();
-        var encodingContext = new RequerstCompressionEncodingContext();
+        var encodingContext = new RequestCompressionEncodingContext();
 
         httpRequestMessage.Method = HttpMethod.Options;
         httpRequestMessage.Options.Set(RequestCompressionOptionKeys.EncodingContext, encodingContext);

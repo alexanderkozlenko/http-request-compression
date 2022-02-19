@@ -17,6 +17,6 @@ public static class RequestCompressionOptionKeys
     public static readonly HttpRequestOptionsKey<CompressionLevel> CompressionLevel =
         new($"{typeof(RequestCompressionOptionKeys).Namespace}.{nameof(CompressionLevel)}");
 
-    public static readonly HttpRequestOptionsKey<RequerstCompressionEncodingContext?> EncodingContext =
+    public static readonly HttpRequestOptionsKey<RequestCompressionEncodingContext?> EncodingContext =
         new($"{typeof(RequestCompressionOptionKeys).Namespace}.{nameof(EncodingContext)}");
 }

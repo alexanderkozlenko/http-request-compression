@@ -4,9 +4,9 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Anemonis.Extensions.RequestCompression;
 
-internal sealed class AcceptEncodingValueCollectionPooledObjectPolicy : PooledObjectPolicy<List<(string, double)>>
+internal sealed class StringWithQualityHeaderValuesPooledObjectPolicy : PooledObjectPolicy<List<(string, double)>>
 {
-    public AcceptEncodingValueCollectionPooledObjectPolicy()
+    public StringWithQualityHeaderValuesPooledObjectPolicy()
     {
     }
 
