@@ -51,8 +51,8 @@ Custom per-request configuration:
 ```cs
 var request = new HttpRequestMessage(HttpMethod.Post, "/api/v1.0/items");
 
-request.Content = new StringContent("Hello World!");
-request.Options.SetCompressionEnabled(true);
+request.Content = JsonContent.Create(item);
+request.Options.SetCompressionEnabled(false);
 
 await httpClient.SendAsync(request);
 ```
@@ -65,7 +65,7 @@ request1.Options.AddCompressionDiscovery(out var encodingContext);
 
 await httpClient.SendAsync(request1);
 
-request2.Content = JsonContent.Create("Hello World!");
+request2.Content = JsonContent.Create(item);
 request2.Options.SetCompressionEncoding(encodingContext.EncodingName);
 
 await httpClient.SendAsync(request2);
