@@ -49,7 +49,7 @@ services
 ```
 Custom per-request configuration:
 ```cs
-var request = new HttpRequestMessage(HttpMethod.Post, "/resource");
+var request = new HttpRequestMessage(HttpMethod.Post, "/api/v1.0/items");
 
 request.Content = new StringContent("Hello World!");
 request.Options.SetCompressionEnabled(true);
@@ -58,8 +58,8 @@ await httpClient.SendAsync(request);
 ```
 Discovery of compression format supported by server (RFC 7694):
 ```cs
-var request1 = new HttpRequestMessage(HttpMethod.Options, "/resource");
-var request2 = new HttpRequestMessage(HttpMethod.Post, "/resource");
+var request1 = new HttpRequestMessage(HttpMethod.Options, "/api/v1.0/items");
+var request2 = new HttpRequestMessage(HttpMethod.Post, "/api/v1.0/items");
 
 request1.Options.AddCompressionDiscovery(out var encodingContext);
 
