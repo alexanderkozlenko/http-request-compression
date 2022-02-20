@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Anemonis.Extensions.RequestCompression.PerfTests;
 
-public class RequestCompressionHttpMessageHandlerEncodingTests
+public class RequestCompressionHttpMessageHandlerCodingTests
 {
     private static readonly MediaTypeHeaderValue _contentType0 = new("application/bson");
     private static readonly MediaTypeHeaderValue _contentType1 = new("application/json");

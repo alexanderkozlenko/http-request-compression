@@ -138,11 +138,11 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             return;
         }
 
-        if (!response.Headers.NonValidated.TryGetValues("Accept-Encoding", out var headerStringValues))
+        if (!response.Headers.NonValidated.TryGetValues("Accept-Encoding", out var headerValues))
         {
             return;
         }
-        if (headerStringValues.Count == 0)
+        if (headerValues.Count == 0)
         {
             return;
         }
@@ -150,21 +150,21 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         var encodingName = default(string);
         var encodingQuality = QualityValues.MinValue;
 
-        foreach (var headerStringValue in headerStringValues)
+        foreach (var headerValue in headerValues)
         {
-            if (headerStringValue is null)
+            if (headerValue is null)
             {
                 continue;
             }
 
-            var headerValueTokens = new StringTokenizer(headerStringValue, _codingTokenSeparators);
+            var headerValueTokens = new StringTokenizer(headerValue, _codingTokenSeparators);
 
             foreach (var headerValueToken in headerValueTokens)
             {
-                if (StringWithQualityHeaderValue.TryParse(headerValueToken.Value, out var headerValue))
+                if (StringWithQualityHeaderValue.TryParse(headerValueToken.Value, out var headerValueObject))
                 {
-                    var currentName = headerValue.Value;
-                    var currentQuality = GetCanonicalQualityValue(headerValue.Quality);
+                    var currentName = headerValueObject.Value;
+                    var currentQuality = GetCanonicalQualityValue(headerValueObject.Quality);
 
                     if (_compressionProviderRegistry.TryGetProvider(currentName, out var compressionProvider))
                     {
