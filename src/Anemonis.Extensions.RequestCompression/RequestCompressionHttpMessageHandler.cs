@@ -5,11 +5,14 @@
 using System.IO.Compression;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace Anemonis.Extensions.RequestCompression;
 
 public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 {
+    private static readonly char[] _codingTokenSeparators = { ',' };
+
     private readonly IRequestCompressionProviderRegistry _compressionProviderRegistry;
     private readonly RequestCompressionHttpMessageHandlerOptions _compressionOptions;
     private readonly ILogger _logger;
@@ -144,7 +147,8 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             return;
         }
 
-        var headerValues = default(List<(string, double)>);
+        var encodingName = default(string);
+        var encodingQuality = QualityValues.MinValue;
 
         foreach (var headerStringValue in headerStringValues)
         {
@@ -153,31 +157,41 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
                 continue;
             }
 
-            var headerValueTokens = TokenizeHeaderValue(headerStringValue);
+            var headerValueTokens = new StringTokenizer(headerStringValue, _codingTokenSeparators);
 
-            if (headerValueTokens.Length == 0)
+            foreach (var headerValueToken in headerValueTokens)
             {
-                continue;
-            }
-
-            headerValues ??= StringWithQualityHeaderValuesPool.Shared.Get();
-            headerValues.EnsureCapacity(headerValues.Count + headerValueTokens.Length);
-
-            for (var i = 0; i < headerValueTokens.Length; i++)
-            {
-                if (StringWithQualityHeaderValue.TryParse(headerValueTokens[i], out var headerValue))
+                if (StringWithQualityHeaderValue.TryParse(headerValueToken.Value, out var headerValue))
                 {
-                    headerValues.Add((headerValue.Value, GetCanonicalQualityValue(headerValue.Quality)));
+                    var currentName = headerValue.Value;
+                    var currentQuality = GetCanonicalQualityValue(headerValue.Quality);
+
+                    if (_compressionProviderRegistry.TryGetProvider(currentName, out var compressionProvider))
+                    {
+                        encodingName = compressionProvider?.EncodingName;
+                        encodingQuality = currentQuality;
+
+                    }
+                    else if (string.Equals(currentName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
+                    {
+                        encodingName = _compressionOptions.EncodingName;
+                        encodingQuality = currentQuality;
+                    }
+                }
+
+                if (encodingQuality >= QualityValues.MaxValue)
+                {
+                    break;
                 }
             }
+
+            if (encodingQuality >= QualityValues.MaxValue)
+            {
+                break;
+            }
         }
 
-        if (headerValues is not null)
-        {
-            encodingContext.EncodingName = SelectSupportedContentCoding(headerValues);
-
-            StringWithQualityHeaderValuesPool.Shared.Return(headerValues);
-        }
+        encodingContext.EncodingName = encodingName;
     }
 
     private static double GetCanonicalQualityValue(double? value)
@@ -190,41 +204,6 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         {
             return Math.Round(value.Value, 3, MidpointRounding.AwayFromZero);
         }
-    }
-
-    private string? SelectSupportedContentCoding(List<(string, double)> headerValues)
-    {
-        var encodingName = default(string);
-        var encodingQuality = QualityValues.MinValue;
-
-        foreach (var (currentName, currentQuality) in headerValues)
-        {
-            if (currentQuality > encodingQuality)
-            {
-                if (_compressionProviderRegistry.TryGetProvider(currentName, out var compressionProvider))
-                {
-                    encodingName = compressionProvider?.EncodingName;
-                    encodingQuality = currentQuality;
-
-                    if (encodingQuality >= QualityValues.MaxValue)
-                    {
-                        break;
-                    }
-                }
-                else if (string.Equals(currentName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
-                {
-                    encodingName = _compressionOptions.EncodingName;
-                    encodingQuality = currentQuality;
-
-                    if (encodingQuality >= QualityValues.MaxValue)
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return encodingName;
     }
 
     protected sealed override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -247,10 +226,5 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         FindSupportedContentCoding(request, response);
 
         return response;
-    }
-
-    private static string[] TokenizeHeaderValue(string value)
-    {
-        return value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 }

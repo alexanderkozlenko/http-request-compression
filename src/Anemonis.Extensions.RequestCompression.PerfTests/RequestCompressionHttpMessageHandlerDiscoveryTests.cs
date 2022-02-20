@@ -13,6 +13,8 @@ public class RequestCompressionHttpMessageHandlerDiscoveryTests
     private static readonly DelegatingHandlerAdapter _httpHandlerAdapter0 = CreateHttpHandlerAdapter(PrimaryHttpHandler0);
     private static readonly DelegatingHandlerAdapter _httpHandlerAdapter1 = CreateHttpHandlerAdapter(PrimaryHttpHandler1);
     private static readonly DelegatingHandlerAdapter _httpHandlerAdapter2 = CreateHttpHandlerAdapter(PrimaryHttpHandler2);
+    private static readonly DelegatingHandlerAdapter _httpHandlerAdapter3 = CreateHttpHandlerAdapter(PrimaryHttpHandler3);
+    private static readonly DelegatingHandlerAdapter _httpHandlerAdapter4 = CreateHttpHandlerAdapter(PrimaryHttpHandler4);
 
     private static DelegatingHandlerAdapter CreateHttpHandlerAdapter(Func<HttpRequestMessage, HttpResponseMessage> primaryHandler)
     {
@@ -52,12 +54,32 @@ public class RequestCompressionHttpMessageHandlerDiscoveryTests
     {
         var response = HttpResponseMessagePool.Shared.Get();
 
+        response.Headers.TryAddWithoutValidation("Accept-Encoding", "b");
+
+        return response;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static HttpResponseMessage PrimaryHttpHandler3(HttpRequestMessage request)
+    {
+        var response = HttpResponseMessagePool.Shared.Get();
+
         response.Headers.TryAddWithoutValidation("Accept-Encoding", "a,b");
 
         return response;
     }
 
-    [Benchmark(Description = "dis:n:-", Baseline = true)]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static HttpResponseMessage PrimaryHttpHandler4(HttpRequestMessage request)
+    {
+        var response = HttpResponseMessagePool.Shared.Get();
+
+        response.Headers.TryAddWithoutValidation("Accept-Encoding", "b,a");
+
+        return response;
+    }
+
+    [Benchmark(Description = "-:dis:n", Baseline = true)]
     public void BenchmarkD0R0()
     {
         var request = HttpRequestMessagePool.Shared.Get();
@@ -71,7 +93,7 @@ public class RequestCompressionHttpMessageHandlerDiscoveryTests
         HttpRequestMessagePool.Shared.Return(request);
     }
 
-    [Benchmark(Description = "dis:y:-")]
+    [Benchmark(Description = "-:dis:y")]
     public void BenchmarkD1R0()
     {
         var context = RequestCompressionEncodingContextPool.Shared.Get();
@@ -87,7 +109,7 @@ public class RequestCompressionHttpMessageHandlerDiscoveryTests
         RequestCompressionEncodingContextPool.Shared.Return(context);
     }
 
-    [Benchmark(Description = "dis:y:1")]
+    [Benchmark(Description = "e:dis:y")]
     public void BenchmarkD1R1()
     {
         var context = RequestCompressionEncodingContextPool.Shared.Get();
@@ -103,7 +125,7 @@ public class RequestCompressionHttpMessageHandlerDiscoveryTests
         RequestCompressionEncodingContextPool.Shared.Return(context);
     }
 
-    [Benchmark(Description = "dis:y:2")]
+    [Benchmark(Description = "?:dis:y")]
     public void BenchmarkD1R2()
     {
         var context = RequestCompressionEncodingContextPool.Shared.Get();
@@ -119,6 +141,38 @@ public class RequestCompressionHttpMessageHandlerDiscoveryTests
         RequestCompressionEncodingContextPool.Shared.Return(context);
     }
 
+    [Benchmark(Description = "e,?:dis:y")]
+    public void BenchmarkD1R3()
+    {
+        var context = RequestCompressionEncodingContextPool.Shared.Get();
+        var request = HttpRequestMessagePool.Shared.Get();
+
+        request.Method = HttpMethod.Options;
+        request.Options.Set(RequestCompressionOptionKeys.EncodingContext, context);
+
+        var response = _httpHandlerAdapter3.InvokeSend(request, default);
+
+        HttpResponseMessagePool.Shared.Return(response);
+        HttpRequestMessagePool.Shared.Return(request);
+        RequestCompressionEncodingContextPool.Shared.Return(context);
+    }
+
+    [Benchmark(Description = "?,e:dis:y")]
+    public void BenchmarkD1R4()
+    {
+        var context = RequestCompressionEncodingContextPool.Shared.Get();
+        var request = HttpRequestMessagePool.Shared.Get();
+
+        request.Method = HttpMethod.Options;
+        request.Options.Set(RequestCompressionOptionKeys.EncodingContext, context);
+
+        var response = _httpHandlerAdapter4.InvokeSend(request, default);
+
+        HttpResponseMessagePool.Shared.Return(response);
+        HttpRequestMessagePool.Shared.Return(request);
+        RequestCompressionEncodingContextPool.Shared.Return(context);
+    }
+
     private sealed class TestRequestCompressionProviderRegistry : IRequestCompressionProviderRegistry
     {
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -126,7 +180,7 @@ public class RequestCompressionHttpMessageHandlerDiscoveryTests
         {
             provider = null;
 
-            return false;
+            return encodingName == "a";
         }
     }
 }
