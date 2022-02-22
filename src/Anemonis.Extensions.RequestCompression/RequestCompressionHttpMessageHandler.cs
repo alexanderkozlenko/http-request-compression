@@ -89,6 +89,18 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         return mediaTypes.Contains(mediaType);
     }
 
+    private static double CreateCanonicalQualityValue(double? value)
+    {
+        if (value is null)
+        {
+            return QualityValues.MaxValue;
+        }
+        else
+        {
+            return Math.Round(value.Value, 3, MidpointRounding.AwayFromZero);
+        }
+    }
+
     private static HttpContent CreateCodingContent(HttpContent content, IRequestCompressionProvider compressionProvider, CompressionLevel compressionLevel)
     {
         var encodedContent = new CodingStreamContent(content, compressionProvider, compressionLevel);
@@ -104,15 +116,11 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         return encodedContent;
     }
 
-    private void FindSupportedContentCoding(HttpRequestMessage request, HttpResponseMessage response)
+    private void FindSupportedContentCoding(HttpRequestMessage request, HttpResponseMessage response, RequestCompressionEncodingContext? encodingContext)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(response);
 
-        if (!request.Options.TryGetValue(RequestCompressionOptionKeys.EncodingContext, out var encodingContext))
-        {
-            return;
-        }
         if (encodingContext is null)
         {
             return;
@@ -164,7 +172,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
                 if (StringWithQualityHeaderValue.TryParse(headerValueToken.Value, out var headerValueObject))
                 {
                     var currentName = headerValueObject.Value;
-                    var currentQuality = GetCanonicalQualityValue(headerValueObject.Quality);
+                    var currentQuality = CreateCanonicalQualityValue(headerValueObject.Quality);
 
                     if (_compressionProviderRegistry.TryGetProvider(currentName, out var compressionProvider))
                     {
@@ -194,36 +202,48 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         encodingContext.EncodingName = encodingName;
     }
 
-    private static double GetCanonicalQualityValue(double? value)
-    {
-        if (value is null)
-        {
-            return QualityValues.MaxValue;
-        }
-        else
-        {
-            return Math.Round(value.Value, 3, MidpointRounding.AwayFromZero);
-        }
-    }
-
     protected sealed override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         ApplySelectedContentCoding(request);
 
+        if (request.Options.TryGetValue(RequestCompressionOptionKeys.EncodingContext, out var encodingContext))
+        {
+            return Send(request, encodingContext, cancellationToken);
+        }
+        else
+        {
+            return base.Send(request, cancellationToken);
+        }
+    }
+
+    protected sealed override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        ApplySelectedContentCoding(request);
+
+        if (request.Options.TryGetValue(RequestCompressionOptionKeys.EncodingContext, out var encodingContext))
+        {
+            return SendAsync(request, encodingContext, cancellationToken);
+        }
+        else
+        {
+            return base.SendAsync(request, cancellationToken);
+        }
+    }
+
+    private HttpResponseMessage Send(HttpRequestMessage request, RequestCompressionEncodingContext? encodingContext, CancellationToken cancellationToken)
+    {
         var response = base.Send(request, cancellationToken);
 
-        FindSupportedContentCoding(request, response);
+        FindSupportedContentCoding(request, response, encodingContext);
 
         return response;
     }
 
-    protected sealed override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, RequestCompressionEncodingContext? encodingContext, CancellationToken cancellationToken)
     {
-        ApplySelectedContentCoding(request);
-
         var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
-        FindSupportedContentCoding(request, response);
+        FindSupportedContentCoding(request, response, encodingContext);
 
         return response;
     }
