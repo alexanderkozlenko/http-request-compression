@@ -150,11 +150,12 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         {
             return;
         }
-        if (headerValues.Count == 0)
-        {
-            return;
-        }
 
+        encodingContext.EncodingName = SelectSupportedContentCoding(headerValues);
+    }
+
+    private string? SelectSupportedContentCoding(HeaderStringValues headerValues)
+    {
         var encodingName = default(string);
         var encodingQuality = QualityValues.MinValue;
 
@@ -199,7 +200,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             }
         }
 
-        encodingContext.EncodingName = encodingName;
+        return encodingName;
     }
 
     protected sealed override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -216,6 +217,15 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         }
     }
 
+    private HttpResponseMessage Send(HttpRequestMessage request, RequestCompressionEncodingContext? encodingContext, CancellationToken cancellationToken)
+    {
+        var response = base.Send(request, cancellationToken);
+
+        FindSupportedContentCoding(request, response, encodingContext);
+
+        return response;
+    }
+
     protected sealed override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         ApplySelectedContentCoding(request);
@@ -228,15 +238,6 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
         {
             return base.SendAsync(request, cancellationToken);
         }
-    }
-
-    private HttpResponseMessage Send(HttpRequestMessage request, RequestCompressionEncodingContext? encodingContext, CancellationToken cancellationToken)
-    {
-        var response = base.Send(request, cancellationToken);
-
-        FindSupportedContentCoding(request, response, encodingContext);
-
-        return response;
     }
 
     private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, RequestCompressionEncodingContext? encodingContext, CancellationToken cancellationToken)
