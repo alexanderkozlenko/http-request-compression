@@ -179,9 +179,8 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
                     {
                         encodingName = compressionProvider?.EncodingName;
                         encodingQuality = currentQuality;
-
                     }
-                    else if (string.Equals(currentName, ContentCodingTokens.Asterisk, StringComparison.Ordinal))
+                    else if (ContentCodingTokens.IsAsterisk(currentName))
                     {
                         encodingName = _compressionOptions.EncodingName;
                         encodingQuality = currentQuality;
