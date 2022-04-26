@@ -6,8 +6,6 @@ on:
       - '.github/**'
   pull_request:
     branches: [ main ]
-    paths-ignore:
-      - '**/*.md'
   schedule:
     - cron: '0 0 * * 6'
 jobs:
