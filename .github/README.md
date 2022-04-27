@@ -1,7 +1,8 @@
 # HTTP client handler for request compression
-[![NuGet](https://img.shields.io/nuget/vpre/Anemonis.Extensions.RequestCompression.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.Extensions.RequestCompression)
-[![MyGet](https://img.shields.io/myget/alexanderkozlenko/vpre/Anemonis.Extensions.RequestCompression.svg?label=myget&style=flat-square)](https://www.myget.org/feed/alexanderkozlenko/package/nuget/Anemonis.Extensions.RequestCompression)
-
+[![Azure Pipelines](https://dev.azure.com/alexanderkozlenko/github-pipelines/_apis/build/status/extensions-request-compression?branchName=main)](https://dev.azure.com/alexanderkozlenko/github-pipelines/_build/latest?definitionId=16&branchName=main)
+[![CodeQL](https://github.com/alexanderkozlenko/extensions-request-compression/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/alexanderkozlenko/extensions-request-compression/actions/workflows/codeql-analysis.yml)
+[![NuGet](https://img.shields.io/nuget/vpre/Anemonis.Extensions.RequestCompression.svg?label=NuGet)](https://www.nuget.org/packages/Anemonis.Extensions.RequestCompression)
+[![MyGet](https://img.shields.io/myget/alexanderkozlenko/vpre/Anemonis.Extensions.RequestCompression.svg?label=MyGet)](https://www.myget.org/feed/alexanderkozlenko/package/nuget/Anemonis.Extensions.RequestCompression)
 
 Transparent HTTP client message handler for request compression with support for [RFC 7694](https://httpwg.org/specs/rfc7694.html).
 
