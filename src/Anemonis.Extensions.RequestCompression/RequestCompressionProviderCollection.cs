@@ -4,6 +4,7 @@
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using static System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
 
 namespace Anemonis.Extensions.RequestCompression;
 
@@ -15,13 +16,13 @@ public sealed class RequestCompressionProviderCollection : ICollection<Type>
     {
     }
 
-    public void Add<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>()
+    public void Add<[DynamicallyAccessedMembers(PublicParameterlessConstructor | PublicMethods | NonPublicMethods | PublicProperties | NonPublicProperties | Interfaces)] T>()
         where T : IRequestCompressionProvider
     {
         _items.Add(typeof(T));
     }
 
-    public void Add([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type item)
+    public void Add([DynamicallyAccessedMembers(PublicParameterlessConstructor | PublicMethods | NonPublicMethods | PublicProperties | NonPublicProperties | Interfaces)] Type item)
     {
         ArgumentNullException.ThrowIfNull(item);
 
