@@ -23,16 +23,16 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
-        var compressionProvider = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider = new TestCompressionProvider("e") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider))
+            .Setup(o => o.TryGetProvider("e", out compressionProvider))
             .Returns(true);
 
-        options.EncodingName = "a";
+        options.EncodingName = "e";
         options.CompressionLevel = CompressionLevel.NoCompression;
 
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
@@ -54,25 +54,25 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
             var message = await request.Content.ReadAsStringAsync();
 
-            Assert.AreEqual("am", message);
+            Assert.AreEqual("em", message);
             Assert.AreEqual(2, request.Content.Headers.ContentEncoding.Count);
-            Assert.AreEqual("a", request.Content.Headers.ContentEncoding.LastOrDefault());
+            Assert.AreEqual("e", request.Content.Headers.ContentEncoding.LastOrDefault());
             Assert.IsNull(request.Content.Headers.ContentLength);
             Assert.AreEqual(DateTimeOffset.UnixEpoch, request.Content.Headers.LastModified);
 
             return new();
         }
 
-        var compressionProvider = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider = new TestCompressionProvider("e") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider))
+            .Setup(o => o.TryGetProvider("e", out compressionProvider))
             .Returns(true);
 
-        options.EncodingName = "a";
+        options.EncodingName = "e";
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("text/plain");
 
@@ -108,16 +108,16 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
-        var compressionProvider = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider = new TestCompressionProvider("e") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider))
+            .Setup(o => o.TryGetProvider("e", out compressionProvider))
             .Returns(true);
 
-        options.EncodingName = "a";
+        options.EncodingName = "e";
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("text/plain");
 
@@ -145,25 +145,25 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
             var message = await request.Content.ReadAsStringAsync();
 
-            Assert.AreEqual("am", message);
+            Assert.AreEqual("em", message);
             Assert.AreEqual(2, request.Content.Headers.ContentEncoding.Count);
-            Assert.AreEqual("a", request.Content.Headers.ContentEncoding.LastOrDefault());
+            Assert.AreEqual("e", request.Content.Headers.ContentEncoding.LastOrDefault());
             Assert.IsNull(request.Content.Headers.ContentLength);
             Assert.AreEqual(DateTimeOffset.UnixEpoch, request.Content.Headers.LastModified);
 
             return new();
         }
 
-        var compressionProvider = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider = new TestCompressionProvider("e") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider))
+            .Setup(o => o.TryGetProvider("e", out compressionProvider))
             .Returns(true);
 
-        options.EncodingName = "a";
+        options.EncodingName = "e";
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("text/plain");
 
@@ -200,7 +200,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
-        var compressionProvider = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider = new TestCompressionProvider("a") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
@@ -334,16 +334,16 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
-        var compressionProvider = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider = new TestCompressionProvider("e") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider))
+            .Setup(o => o.TryGetProvider("e", out compressionProvider))
             .Returns(true);
 
-        options.EncodingName = "a";
+        options.EncodingName = "e";
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("application/json");
 
@@ -379,16 +379,16 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return new();
         }
 
-        var compressionProvider = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider = new TestCompressionProvider("e") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider))
+            .Setup(o => o.TryGetProvider("e", out compressionProvider))
             .Returns(true);
 
-        options.EncodingName = "a";
+        options.EncodingName = "e";
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("application/json");
 
@@ -416,25 +416,25 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
             var message = await request.Content.ReadAsStringAsync();
 
-            Assert.AreEqual("am", message);
+            Assert.AreEqual("em", message);
             Assert.AreEqual(2, request.Content.Headers.ContentEncoding.Count);
-            Assert.AreEqual("a", request.Content.Headers.ContentEncoding.LastOrDefault());
+            Assert.AreEqual("e", request.Content.Headers.ContentEncoding.LastOrDefault());
             Assert.IsNull(request.Content.Headers.ContentLength);
             Assert.AreEqual(DateTimeOffset.UnixEpoch, request.Content.Headers.LastModified);
 
             return new();
         }
 
-        var compressionProvider = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider = new TestCompressionProvider("e") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider))
+            .Setup(o => o.TryGetProvider("e", out compressionProvider))
             .Returns(true);
 
-        options.EncodingName = "a";
+        options.EncodingName = "e";
         options.CompressionLevel = CompressionLevel.NoCompression;
         options.MediaTypes.Add("application/json");
 
@@ -495,22 +495,22 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return response;
         }
 
-        var compressionProvider0 = default(IRequestCompressionProvider);
+        var compressionProvider = default(IRequestCompressionProvider);
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider(It.IsAny<string>(), out compressionProvider0))
+            .Setup(o => o.TryGetProvider(It.IsAny<string>(), out compressionProvider))
             .Returns(false);
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("identity", out compressionProvider0))
+            .Setup(o => o.TryGetProvider("identity", out compressionProvider))
             .Returns(true);
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider0))
+            .Setup(o => o.TryGetProvider("a", out compressionProvider))
             .Returns(false);
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("b", out compressionProvider0))
+            .Setup(o => o.TryGetProvider("b", out compressionProvider))
             .Returns(false);
 
         options.EncodingName = "identity";
@@ -538,18 +538,18 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
             var response = new HttpResponseMessage();
 
-            response.Headers.TryAddWithoutValidation("Accept-Encoding", "a");
+            response.Headers.TryAddWithoutValidation("Accept-Encoding", "e");
 
             return response;
         }
 
-        var compressionProvider0 = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider = new TestCompressionProvider("e") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider0))
+            .Setup(o => o.TryGetProvider("e", out compressionProvider))
             .Returns(true);
 
         options.EncodingName = "identity";
@@ -565,7 +565,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
         Assert.IsNotNull(httpResponseMessage);
-        Assert.AreEqual("a", encodingContext.EncodingName);
+        Assert.AreEqual("e", encodingContext.EncodingName);
     }
 
     [TestMethod]
@@ -582,23 +582,24 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             return response;
         }
 
-        var compressionProvider0 = default(IRequestCompressionProvider);
-        var compressionProvider1 = new TestCompressionProvider() as IRequestCompressionProvider;
+        var compressionProvider1 = default(IRequestCompressionProvider);
+        var compressionProvider2 = new TestCompressionProvider("a") as IRequestCompressionProvider;
+        var compressionProvider3 = new TestCompressionProvider("b") as IRequestCompressionProvider;
         var compressionProviderRegistry = new Mock<IRequestCompressionProviderRegistry>(MockBehavior.Strict);
         var logger = NullLogger.Instance;
         var options = new RequestCompressionHttpMessageHandlerOptions();
 
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider(It.IsAny<string>(), out compressionProvider0))
+            .Setup(o => o.TryGetProvider(It.IsAny<string>(), out compressionProvider1))
             .Returns(false);
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("identity", out compressionProvider0))
+            .Setup(o => o.TryGetProvider("identity", out compressionProvider1))
             .Returns(true);
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("a", out compressionProvider1))
+            .Setup(o => o.TryGetProvider("a", out compressionProvider2))
             .Returns(true);
         compressionProviderRegistry
-            .Setup(o => o.TryGetProvider("b", out compressionProvider1))
+            .Setup(o => o.TryGetProvider("b", out compressionProvider3))
             .Returns(true);
 
         options.EncodingName = "identity";
@@ -640,7 +641,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             .Setup(o => o.TryGetProvider("identity", out compressionProvider))
             .Returns(true);
 
-        options.EncodingName = "a";
+        options.EncodingName = "e";
 
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
@@ -679,7 +680,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
             .Setup(o => o.TryGetProvider("*", out compressionProvider))
             .Returns(false);
 
-        options.EncodingName = "a";
+        options.EncodingName = "e";
 
         var httpMessageHandler = new RequestCompressionHttpMessageHandler(compressionProviderRegistry.Object, options, logger);
         var httpMessageHandlerAdapter = new DelegatingHandlerAdapter(httpMessageHandler, PrimaryHandler);
@@ -692,11 +693,16 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
         Assert.IsNotNull(httpResponseMessage);
-        Assert.AreEqual("a", encodingContext.EncodingName);
+        Assert.AreEqual("e", encodingContext.EncodingName);
     }
 
     private sealed class TestCompressionProvider : IRequestCompressionProvider
     {
+        public TestCompressionProvider(string encodingName)
+        {
+            EncodingName = encodingName;
+        }
+
         public Stream CreateStream(Stream outputStream, CompressionLevel compressionLevel)
         {
             var inputStream = new DelegatingStream(outputStream);
@@ -711,10 +717,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         public string EncodingName
         {
-            get
-            {
-                return "a";
-            }
+            get;
         }
     }
 }

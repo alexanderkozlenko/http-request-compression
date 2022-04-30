@@ -68,7 +68,7 @@ public class RequestCompressionHttpMessageHandlerCodingTests
 
     private sealed class TestRequestCompressionProviderRegistry : IRequestCompressionProviderRegistry
     {
-        private readonly IRequestCompressionProvider _provider = new TestCompressionProvider();
+        private readonly IRequestCompressionProvider _provider = new TestCompressionProvider("e");
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public bool TryGetProvider(string encodingName, out IRequestCompressionProvider? provider)
@@ -81,6 +81,11 @@ public class RequestCompressionHttpMessageHandlerCodingTests
 
     private sealed class TestCompressionProvider : IRequestCompressionProvider
     {
+        public TestCompressionProvider(string encodingName)
+        {
+            EncodingName = encodingName;
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public Stream CreateStream(Stream outputStream, CompressionLevel compressionLevel)
         {
@@ -89,10 +94,7 @@ public class RequestCompressionHttpMessageHandlerCodingTests
 
         public string EncodingName
         {
-            get
-            {
-                return "e";
-            }
+            get;
         }
     }
 }

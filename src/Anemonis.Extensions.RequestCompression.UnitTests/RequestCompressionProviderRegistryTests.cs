@@ -29,7 +29,7 @@ public sealed class RequestCompressionProviderRegistryTests
 
         var providerRegistry = new RequestCompressionProviderRegistry(Options.Create(options));
 
-        var result = providerRegistry.TryGetProvider("a", out var provider);
+        var result = providerRegistry.TryGetProvider("e", out var provider);
 
         Assert.IsTrue(result);
         Assert.IsNotNull(provider);
@@ -59,7 +59,7 @@ public sealed class RequestCompressionProviderRegistryTests
         {
             get
             {
-                return "a";
+                return "e";
             }
         }
     }

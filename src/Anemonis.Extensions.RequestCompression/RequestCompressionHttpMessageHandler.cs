@@ -156,8 +156,8 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 
     private string? SelectSupportedContentCoding(HeaderStringValues headerValues)
     {
-        var encodingName = default(string);
-        var encodingQuality = QualityValues.MinValue;
+        var supportedEncodingName = default(string);
+        var supportedEncodingQuality = QualityValues.MinValue;
 
         foreach (var headerValue in headerValues)
         {
@@ -172,34 +172,39 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             {
                 if (StringWithQualityHeaderValue.TryParse(headerValueToken.Value, out var headerValueObject))
                 {
-                    var currentName = headerValueObject.Value;
-                    var currentQuality = CreateCanonicalQualityValue(headerValueObject.Quality);
+                    var currentEncodingName = headerValueObject.Value;
+                    var currentEncodingQuality = default(double);
 
-                    if (_compressionProviderRegistry.TryGetProvider(currentName, out var compressionProvider))
+                    if (_compressionProviderRegistry.TryGetProvider(currentEncodingName, out var compressionProvider))
                     {
-                        encodingName = compressionProvider?.EncodingName;
-                        encodingQuality = currentQuality;
+                        currentEncodingQuality = CreateCanonicalQualityValue(headerValueObject.Quality);
+
+                        if (currentEncodingQuality > supportedEncodingQuality)
+                        {
+                            supportedEncodingName = compressionProvider?.EncodingName;
+                            supportedEncodingQuality = currentEncodingQuality;
+                        }
                     }
-                    else if (ContentCodingTokens.IsAsterisk(currentName))
+                    else if (ContentCodingTokens.IsAsterisk(currentEncodingName))
                     {
-                        encodingName = _compressionOptions.EncodingName;
-                        encodingQuality = currentQuality;
+                        currentEncodingQuality = CreateCanonicalQualityValue(headerValueObject.Quality);
+
+                        if (currentEncodingQuality > supportedEncodingQuality)
+                        {
+                            supportedEncodingName = _compressionOptions.EncodingName;
+                            supportedEncodingQuality = currentEncodingQuality;
+                        }
                     }
                 }
 
-                if (encodingQuality >= QualityValues.MaxValue)
+                if (supportedEncodingQuality >= QualityValues.MaxValue)
                 {
-                    break;
+                    return supportedEncodingName;
                 }
-            }
-
-            if (encodingQuality >= QualityValues.MaxValue)
-            {
-                break;
             }
         }
 
-        return encodingName;
+        return supportedEncodingName;
     }
 
     protected sealed override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
