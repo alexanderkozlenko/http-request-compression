@@ -151,6 +151,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
             return;
         }
 
+        encodingContext.IsDiscoverySupported = true;
         encodingContext.EncodingName = SelectSupportedContentCoding(headerValues);
     }
 

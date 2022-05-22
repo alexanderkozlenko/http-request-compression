@@ -16,4 +16,11 @@ public sealed class RequestCompressionEncodingContext
         get;
         set;
     }
+
+    /// <summary>Gets or sets the flag that indicates whether server supports discovery of compression formats supported.</summary>
+    public bool IsDiscoverySupported
+    {
+        get;
+        set;
+    }
 }

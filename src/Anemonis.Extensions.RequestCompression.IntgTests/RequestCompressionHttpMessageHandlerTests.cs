@@ -326,6 +326,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
 
         await httpClient.SendAsync(httpRequestMessage1);
 
+        Assert.IsTrue(encodingContext.IsDiscoverySupported);
         Assert.AreEqual("br", encodingContext.EncodingName);
 
         var httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, "http://localhost");

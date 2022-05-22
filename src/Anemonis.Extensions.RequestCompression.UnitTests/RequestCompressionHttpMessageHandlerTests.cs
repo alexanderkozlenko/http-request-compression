@@ -526,6 +526,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
         Assert.IsNotNull(httpResponseMessage);
+        Assert.IsTrue(encodingContext.IsDiscoverySupported);
         Assert.AreEqual(null, encodingContext.EncodingName);
     }
 
@@ -565,6 +566,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
         Assert.IsNotNull(httpResponseMessage);
+        Assert.IsTrue(encodingContext.IsDiscoverySupported);
         Assert.AreEqual("e", encodingContext.EncodingName);
     }
 
@@ -615,6 +617,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
         Assert.IsNotNull(httpResponseMessage);
+        Assert.IsTrue(encodingContext.IsDiscoverySupported);
         Assert.AreEqual("a", encodingContext.EncodingName);
     }
 
@@ -654,6 +657,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
         Assert.IsNotNull(httpResponseMessage);
+        Assert.IsTrue(encodingContext.IsDiscoverySupported);
         Assert.AreEqual(null, encodingContext.EncodingName);
     }
 
@@ -693,6 +697,7 @@ public sealed class RequestCompressionHttpMessageHandlerTests
         var httpResponseMessage = await httpMessageHandlerAdapter.SendAsync(httpRequestMessage, default);
 
         Assert.IsNotNull(httpResponseMessage);
+        Assert.IsTrue(encodingContext.IsDiscoverySupported);
         Assert.AreEqual("e", encodingContext.EncodingName);
     }
 
