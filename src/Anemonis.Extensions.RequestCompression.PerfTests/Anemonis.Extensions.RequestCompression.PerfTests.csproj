@@ -9,7 +9,7 @@
     <ProjectReference Include="..\Anemonis.Extensions.RequestCompression\Anemonis.Extensions.RequestCompression.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="6.0.8" />
   </ItemGroup>
 </Project>
