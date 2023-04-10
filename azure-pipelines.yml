@@ -31,8 +31,3 @@ steps:
 - publish: '$(Build.ArtifactStagingDirectory)'
   artifact: '$(Build.ArtifactName)'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-- script: >
-    dotnet nuget push $(Build.ArtifactStagingDirectory)/*.nupkg
-    --source $(System.Staging.NuGet.FeedURL)
-    --api-key $(System.Staging.NuGet.APIKey)
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
