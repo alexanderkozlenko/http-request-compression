@@ -30,4 +30,4 @@ var config = ManualConfig.CreateEmpty()
         .WithStrategy(RunStrategy.Throughput))
     .WithSummaryStyle(new(CultureInfo.InvariantCulture, false, SizeUnit.B, TimeUnit.Microsecond));
 
-BenchmarkSwitcher.FromAssembly(Assembly.GetEntryAssembly()).Run(args, config);
+BenchmarkSwitcher.FromAssembly(Assembly.GetEntryAssembly()!).Run(args, config);
