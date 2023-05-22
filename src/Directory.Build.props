@@ -33,7 +33,7 @@
     <VersionSuffix Condition="'$(VersionSuffix)' != ''">$(VersionSuffix).$([System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds())</VersionSuffix>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)\Addax.Formats.Tabular.png">
+    <None Include="$(MSBuildThisFileDirectory)\Anemonis.Extensions.RequestCompression.png">
       <Pack>true</Pack>
       <PackagePath>$(PackageIcon)</PackagePath>
       <Visible>false</Visible>
