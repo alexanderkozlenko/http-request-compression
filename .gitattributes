@@ -1,3 +1,5 @@
 * text=auto
+
 *.cs text=auto diff=csharp
-*.md text=auto diff=markdown
+*.csproj text=auto
+*.sln text=auto eol=crlf

@@ -3,16 +3,21 @@ steps:
   inputs:
     useGlobalJson: true
 - script: >
-    dotnet build $(Build.SourcesDirectory)/src/
+    dotnet build $(Build.SourcesDirectory)
     -p:ContinuousIntegrationBuild=true
-    -p:BuildNumber=$(Build.BuildNumber)
-    --configuration $(Build.Configuration)
+    -c Release
 - script: >
-    dotnet test $(Build.SourcesDirectory)/src/
+    dotnet pack $(Build.SourcesDirectory)
     -p:ContinuousIntegrationBuild=true
-    --configuration $(Build.Configuration)
+    -c Release
+    -o $(Build.ArtifactStagingDirectory)
+    --no-build
+- script: >
+    dotnet test $(Build.SourcesDirectory)
+    -p:ContinuousIntegrationBuild=true
+    -c Release
+    -l TRX
     --results-directory $(Common.TestResultsDirectory)
-    --logger TRX
     --no-build
 - task: PublishTestResults@2
   inputs:
@@ -20,14 +25,4 @@ steps:
     searchFolder: '$(Common.TestResultsDirectory)'
     testResultsFiles: '*.trx'
     testRunner: 'VSTest'
-- script: >
-    dotnet pack $(Build.SourcesDirectory)/src/
-    -p:ContinuousIntegrationBuild=true
-    -p:BuildNumber=$(Build.BuildNumber)
-    --configuration $(Build.Configuration)
-    --output $(Build.ArtifactStagingDirectory)
-    --include-symbols
-    --no-build
 - publish: '$(Build.ArtifactStagingDirectory)'
-  artifact: '$(Build.ArtifactName)'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))

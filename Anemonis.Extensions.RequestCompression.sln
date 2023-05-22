@@ -5,17 +5,17 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AAB555E0-82C3-45E2-BD95-4120AD903050}"
 	ProjectSection(SolutionItems) = preProject
-		CodeAnalysis.globalconfig = CodeAnalysis.globalconfig
-		Directory.Build.props = Directory.Build.props
+		src\.globalconfig = src\.globalconfig
+		src\Directory.Build.props = src\Directory.Build.props
+		src\Directory.Packages.props = src\Directory.Packages.props
+		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anemonis.Extensions.RequestCompression", "Anemonis.Extensions.RequestCompression\Anemonis.Extensions.RequestCompression.csproj", "{38EB58FE-E2F9-48A1-904C-9DA811375067}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anemonis.Extensions.RequestCompression", "src\Anemonis.Extensions.RequestCompression\Anemonis.Extensions.RequestCompression.csproj", "{38EB58FE-E2F9-48A1-904C-9DA811375067}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anemonis.Extensions.RequestCompression.UnitTests", "Anemonis.Extensions.RequestCompression.UnitTests\Anemonis.Extensions.RequestCompression.UnitTests.csproj", "{9D381015-2194-4FAF-A32A-60E3B8836E5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anemonis.Extensions.RequestCompression.UnitTests", "src\Anemonis.Extensions.RequestCompression.UnitTests\Anemonis.Extensions.RequestCompression.UnitTests.csproj", "{9D381015-2194-4FAF-A32A-60E3B8836E5E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anemonis.Extensions.RequestCompression.IntgTests", "Anemonis.Extensions.RequestCompression.IntgTests\Anemonis.Extensions.RequestCompression.IntgTests.csproj", "{0EFEC0A3-189A-4F29-967C-E2AE5AFB89FD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anemonis.Extensions.RequestCompression.PerfTests", "Anemonis.Extensions.RequestCompression.PerfTests\Anemonis.Extensions.RequestCompression.PerfTests.csproj", "{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anemonis.Extensions.RequestCompression.IntgTests", "src\Anemonis.Extensions.RequestCompression.IntgTests\Anemonis.Extensions.RequestCompression.IntgTests.csproj", "{0EFEC0A3-189A-4F29-967C-E2AE5AFB89FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,6 @@ Global
 		{0EFEC0A3-189A-4F29-967C-E2AE5AFB89FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EFEC0A3-189A-4F29-967C-E2AE5AFB89FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EFEC0A3-189A-4F29-967C-E2AE5AFB89FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14778EB2-9D8A-453D-B40E-1ECA2BAEB27B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

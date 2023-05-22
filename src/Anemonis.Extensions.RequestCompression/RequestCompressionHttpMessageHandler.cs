@@ -1,4 +1,4 @@
-﻿// © Oleksandr Kozlenko. Licensed under the MIT license.
+﻿// (c) Oleksandr Kozlenko. Licensed under the MIT license.
 
 #pragma warning disable CS1591
 

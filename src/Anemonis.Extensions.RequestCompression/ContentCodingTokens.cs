@@ -1,4 +1,4 @@
-﻿// © Oleksandr Kozlenko. Licensed under the MIT license.
+﻿// (c) Oleksandr Kozlenko. Licensed under the MIT license.
 
 #pragma warning disable CA1802
 
@@ -17,6 +17,6 @@ internal static class ContentCodingTokens
 
     public static bool IsAsterisk([NotNullWhen(true)] string? name)
     {
-        return (name is { Length: 1 }) && (name[0] == '*');
+        return name is ['*'];
     }
 }

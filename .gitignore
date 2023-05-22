@@ -1,6 +1,6 @@
-﻿.vs/
+syntax: glob
+
+.vs/
 .vscode/
-bin/
-obj/
+artifacts/
 *.user
-launchSettings.json
