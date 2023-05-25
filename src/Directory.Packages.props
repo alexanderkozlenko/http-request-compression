@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
@@ -11,6 +11,6 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageVersion Include="Moq" Version="4.18.4" />
     <PackageVersion Include="MSTest.TestAdapter" Version="3.0.2" />
-    <PackageVersion Include="MSTest.TestFramework" Version="3.0.2" />
+    <PackageVersion Include="MSTest.TestFramework" Version="3.0.3" />
   </ItemGroup>
 </Project>
