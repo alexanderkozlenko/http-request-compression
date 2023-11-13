@@ -11,7 +11,7 @@ namespace Anemonis.Extensions.RequestCompression;
 
 public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
 {
-    private static readonly char[] _codingTokenSeparators = { ',' };
+    private static readonly char[] s_codingTokenSeparators = { ',' };
 
     private readonly IRequestCompressionProviderRegistry _compressionProviderRegistry;
     private readonly RequestCompressionHttpMessageHandlerOptions _compressionOptions;
@@ -167,7 +167,7 @@ public sealed class RequestCompressionHttpMessageHandler : DelegatingHandler
                 continue;
             }
 
-            var headerValueTokens = new StringTokenizer(headerValue, _codingTokenSeparators);
+            var headerValueTokens = new StringTokenizer(headerValue, s_codingTokenSeparators);
 
             foreach (var headerValueToken in headerValueTokens)
             {

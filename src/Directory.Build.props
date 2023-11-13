@@ -1,47 +1,14 @@
 ﻿<Project>
   <PropertyGroup>
-    <LangVersion>11.0</LangVersion>
-    <Features>$(Features);strict;nullablePublicOnly;</Features>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AnalysisMode>Minimum</AnalysisMode>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
-    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-  </PropertyGroup>
-  <ItemGroup>
-    <Using Include="System.Diagnostics" />
-  </ItemGroup>
-  <PropertyGroup>
-    <VersionPrefix>1.4.0</VersionPrefix>
-    <VersionSuffix>preview</VersionSuffix>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Authors><![CDATA[Oleksandr Kozlenko]]></Authors>
-    <Copyright><![CDATA[© Oleksandr Kozlenko. All rights reserved.]]></Copyright>
-    <PackageDescription><![CDATA[Transparent HTTP client message handler for request compression with support for RFC 7694.]]></PackageDescription>
-    <PackageTags><![CDATA[]]></PackageTags>
-    <PackageIcon>Icon.png</PackageIcon>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
-    <VersionSuffix Condition="'$(VersionSuffix)' != ''">$(VersionSuffix).$([System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds())</VersionSuffix>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)\Anemonis.Extensions.RequestCompression.png">
-      <Pack>true</Pack>
-      <PackagePath>$(PackageIcon)</PackagePath>
-      <Visible>false</Visible>
-    </None>
-  </ItemGroup>
-  <PropertyGroup>
     <ArtifactsPath>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', '..', 'artifacts'))</ArtifactsPath>
     <BaseIntermediateOutputPath>$([MSBuild]::NormalizeDirectory('$(ArtifactsPath)', 'obj', '$(MSBuildProjectName)'))</BaseIntermediateOutputPath>
     <BaseOutputPath>$([MSBuild]::NormalizeDirectory('$(ArtifactsPath)', 'bin', '$(MSBuildProjectName)'))</BaseOutputPath>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\Directory.Compile.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\Directory.Metadata.props" />
+  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
+    <VersionSuffix Condition="'$(VersionSuffix)' != ''">$(VersionSuffix).$([System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds())</VersionSuffix>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\Directory.Packaging.props" />
 </Project>

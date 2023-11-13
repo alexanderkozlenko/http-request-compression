@@ -1,5 +1,4 @@
-﻿#pragma warning disable IDE1006
-#pragma warning disable CS1998
+﻿#pragma warning disable CS1998
 
 using FakeItEasy;
 using System.IO.Compression;

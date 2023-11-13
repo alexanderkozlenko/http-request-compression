@@ -1,0 +1,13 @@
+﻿<Project>
+  <PropertyGroup>
+    <Authors><![CDATA[Oleksandr Kozlenko]]></Authors>
+    <Copyright><![CDATA[© Oleksandr Kozlenko. All rights reserved.]]></Copyright>
+    <VersionPrefix>1.4.0</VersionPrefix>
+    <VersionSuffix>preview</VersionSuffix>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsPackable)' != 'false'">
+    <PackageDescription><![CDATA[Transparent HTTP client message handler for request compression with support for RFC 7694.]]></PackageDescription>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags><![CDATA[]]></PackageTags>
+  </PropertyGroup>
+</Project>

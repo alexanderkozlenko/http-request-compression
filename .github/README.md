@@ -1,19 +1,24 @@
-# HTTP client handler for request compression
+## HTTP client handler for request compression
 
 Transparent HTTP client message handler for request compression with support for RFC 7694.
 
-## Packages
+|ID|Stable|Preview|
+|:-|:-|:-|
+|Anemonis.Extensions.RequestCompression|[![NuGet](https://img.shields.io/nuget/v/Anemonis.Extensions.RequestCompression?style=flat-square)](https://nuget.org/packages/Anemonis.Extensions.RequestCompression)|[![NuGet](https://img.shields.io/nuget/vpre/Anemonis.Extensions.RequestCompression?style=flat-square)](https://nuget.org/packages/Anemonis.Extensions.RequestCompression)|
 
-|Name|Version|
-|:-|:-|
-|Anemonis.Extensions.RequestCompression|[![NuGet](https://img.shields.io/nuget/vpre/Anemonis.Extensions.RequestCompression.svg?style=flat)](https://www.nuget.org/packages/Anemonis.Extensions.RequestCompression)|
-
-## Overview
+### Features
 
 - The content codings supported by default are Brotli and GZIP.
 - The media types compressed by default are `application/json` and `application/xml`.
 - The compression format by default is Brotli with the fastest compression level.
 - The middleware supports RFC 7694 for OPTIONS requests.
+
+### Quick Links
+
+- [IETF - RFC 7694](https://www.rfc-editor.org/rfc/rfc7694)
+- [IETF - RFC 9110](https://www.rfc-editor.org/rfc/rfc9110)
+
+### Quick Start
 
 An example of a default global configuration:
 
