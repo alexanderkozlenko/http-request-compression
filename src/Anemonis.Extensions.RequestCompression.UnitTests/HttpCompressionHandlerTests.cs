@@ -90,7 +90,7 @@ public sealed partial class HttpCompressionHandlerTests
         await client.SendAsync(request);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow("fe", "fe")]
     [DataRow("ue", null)]
     [DataRow("*", null)]

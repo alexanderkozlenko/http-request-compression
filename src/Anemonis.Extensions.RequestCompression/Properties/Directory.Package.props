@@ -1,0 +1,6 @@
+﻿<Project>
+  <PropertyGroup>
+    <PackageDescription><![CDATA[An HTTP client message handler for transparent request compression.]]></PackageDescription>
+    <PackageTags><![CDATA[http compression brotli deflate gzip]]></PackageTags>
+  </PropertyGroup>
+</Project>
