@@ -1,5 +1,6 @@
 ﻿// (c) Oleksandr Kozlenko. Licensed under the MIT license.
 
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Net.Http.Headers;
@@ -11,12 +12,12 @@ internal sealed class HttpCompressionHandler : DelegatingHandler
 {
     private static readonly char[] s_headerSeparators = [','];
 
-    private readonly Dictionary<string, HttpCompressionProvider> _compressionProviders;
-    private readonly HashSet<string> _mediaTypes;
+    private readonly FrozenDictionary<string, HttpCompressionProvider> _compressionProviders;
+    private readonly FrozenSet<string> _mediaTypes;
     private readonly string _compressionEncoding;
     private readonly CompressionLevel _compressionLevel;
 
-    public HttpCompressionHandler(Dictionary<string, HttpCompressionProvider> compressionProviders, HashSet<string> mediaTypes, string compressionEncoding, CompressionLevel compressionLevel)
+    public HttpCompressionHandler(FrozenDictionary<string, HttpCompressionProvider> compressionProviders, FrozenSet<string> mediaTypes, string compressionEncoding, CompressionLevel compressionLevel)
     {
         _compressionProviders = compressionProviders;
         _mediaTypes = mediaTypes;
@@ -154,7 +155,7 @@ internal sealed class HttpCompressionHandler : DelegatingHandler
         return result;
     }
 
-    private static bool TryGetContentEncoding(HeaderStringValues headerValues, Dictionary<string, HttpCompressionProvider> compressionProviders, [NotNullWhen(true)] out string? contentEncoding)
+    private static bool TryGetContentEncoding(HeaderStringValues headerValues, FrozenDictionary<string, HttpCompressionProvider> compressionProviders, [NotNullWhen(true)] out string? contentEncoding)
     {
         var bestContentEncoding = default(string);
         var bestContentEncodingQuality = .0;

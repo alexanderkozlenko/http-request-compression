@@ -24,9 +24,8 @@ How to add the compression handler to a named HTTP client with default settings:
 <p />
 
 ```cs
-services
-    .AddHttpClient("my-http-client")
-    .AddCompressionHandler();
+services.AddHttpClient("my-client")
+        .AddCompressionHandler();
 ```
 
 <p />
@@ -36,45 +35,46 @@ How to add the compression handler to a named HTTP client with specific settings
 <p />
 
 ```cs
-services
-    .AddHttpClient("my-http-client")
-    .AddCompressionHandler(["text/plain"], "deflate");
+services.AddHttpClient("my-client")
+        .AddCompressionHandler(options =>
+        {
+            options.MediaTypes.Add("application/json-seq");
+            options.CompressionEncoding = "deflate";
+        });
 ```
 
 <p />
 
-How to add the compression handler to a named HTTP client with specific global settings:
+How to add the compression handler to a named HTTP client with specific shared settings:
 
 <p />
 
 ```cs
-services
-    .Configure<HttpCompressionOptions>(options =>
-    {
-        options.CompressionEncoding = "deflate";
-        options.MediaTypes.Add("application/json-seq");
-    });
+services.Configure<HttpCompressionOptions>(options =>
+        {
+            options.MediaTypes.Add("application/json-seq");
+            options.CompressionEncoding = "deflate";
+        });
 
-services
-    .AddHttpClient("my-http-client")
-    .AddCompressionHandler();
+services.AddHttpClient("my-client")
+        .AddCompressionHandler();
 ```
 
 <p />
 
-How to discover and apply a compression encoding supported by a server (RFC 7694):
+How to discover and apply a compression encoding supported by a server as per RFC 7694:
 
 <p />
 
 ```cs
 var context = new HttpCompressionContext();
-
 var request1 = new HttpRequestMessage(HttpMethod.Options, "/api/items");
-var request2 = new HttpRequestMessage(HttpMethod.Post, "/api/items");
 
 request1.Options.Set(HttpCompressionOptionKeys.HttpCompressionContext, context);
 
 await httpClient.SendAsync(request1);
+
+var request2 = new HttpRequestMessage(HttpMethod.Post, "/api/items");
 
 request2.Content = JsonContent.Create(item);
 request1.Options.Set(HttpCompressionOptionKeys.HttpCompressionContext, context);

@@ -3,6 +3,7 @@
     <VersionPrefix>2.0.0</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReleaseNotes>https://github.com/alexanderkozlenko/http-request-compression/releases</PackageReleaseNotes>
     <Authors><![CDATA[Oleksandr Kozlenko]]></Authors>
     <Copyright><![CDATA[© Oleksandr Kozlenko. All rights reserved.]]></Copyright>
   </PropertyGroup>

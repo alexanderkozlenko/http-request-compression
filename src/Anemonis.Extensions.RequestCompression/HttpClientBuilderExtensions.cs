@@ -1,60 +1,73 @@
 ﻿// (c) Oleksandr Kozlenko. Licensed under the MIT license.
 
-using System.IO.Compression;
+using System.Collections.Frozen;
 using Anemonis.Extensions.RequestCompression;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-/// <summary>Provides extension methods for an HTTP client builder that add an HTTP message handler with the request compression feature.</summary>
+/// <summary>Provides <see cref="IHttpClientBuilder" /> extension methods for HTTP request compression.</summary>
 public static class HttpClientBuilderExtensions
 {
-    /// <summary>Adds a delegate that will be used to create an HTTP message handler with the request compression feature.</summary>
-    /// <param name="builder">An <see cref="IHttpClientBuilder" /> that can be used to configure the client.</param>
-    /// <param name="mediaTypes">The collection of media types eligible for compression.</param>
-    /// <param name="compressionEncoding">The compression encoding to apply.</param>
-    /// <param name="compressionLevel">The level of compression to use.</param>
-    /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the client.</returns>
+    /// <summary>Adds a handler for transparent HTTP request compression.</summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <returns>The value of <paramref name="builder"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="builder" /> is <see langword="null" />.</exception>
-    public static IHttpClientBuilder AddCompressionHandler(this IHttpClientBuilder builder, IEnumerable<string>? mediaTypes = null, string? compressionEncoding = null, CompressionLevel? compressionLevel = null)
+    public static IHttpClientBuilder AddCompressionHandler(this IHttpClientBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        return builder.AddHttpMessageHandler(CreateHttpMessageHandler);
+        return builder.AddHttpMessageHandler(static services => CreateHttpMessageHandler(services, Options.Options.DefaultName));
+    }
 
-        DelegatingHandler CreateHttpMessageHandler(IServiceProvider services)
-        {
-            var handlerCompressionProviders = HttpCompressionOptions.DefaultCompressionProviders;
-            var handlerMediaTypes = HttpCompressionOptions.DefaultMediaTypes;
-            var handlerCompressionEncoding = HttpCompressionOptions.DefaultCompressionEncoding;
-            var handlerCompressionLevel = HttpCompressionOptions.DefaultCompressionLevel;
+    /// <summary>Adds a handler for transparent HTTP request compression.</summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <param name="configure">The callback that configures the handler.</param>
+    /// <returns>The value of <paramref name="builder"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="builder" /> or <paramref name="configure" /> is <see langword="null" />.</exception>
+    public static IHttpClientBuilder AddCompressionHandler(this IHttpClientBuilder builder, Action<HttpCompressionOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configure);
 
-            var compressionOptions = services.GetService<IOptions<HttpCompressionOptions>>();
+        var optionsName = GetOptionsName(builder.Name);
 
-            if (compressionOptions is not null)
-            {
-                handlerCompressionProviders = (Dictionary<string, HttpCompressionProvider>)compressionOptions.Value.CompressionProviders;
-                handlerMediaTypes = (HashSet<string>)compressionOptions.Value.MediaTypes;
-                handlerCompressionEncoding = compressionOptions.Value.CompressionEncoding ?? HttpCompressionOptions.DefaultCompressionEncoding;
-                handlerCompressionLevel = compressionOptions.Value.CompressionLevel;
-            }
+        builder.Services.AddOptions<HttpCompressionOptions>(optionsName).Configure(configure);
 
-            if (mediaTypes is not null)
-            {
-                handlerMediaTypes = new(mediaTypes, StringComparer.OrdinalIgnoreCase);
-            }
+        return builder.AddHttpMessageHandler(services => CreateHttpMessageHandler(services, optionsName));
+    }
 
-            if (!string.IsNullOrEmpty(compressionEncoding))
-            {
-                handlerCompressionEncoding = compressionEncoding;
-            }
+    /// <summary>Adds a handler for transparent HTTP request compression.</summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <param name="configure">The callback that configures the handler.</param>
+    /// <returns>The value of <paramref name="builder"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="builder" /> or <paramref name="configure" /> is <see langword="null" />.</exception>
+    public static IHttpClientBuilder AddCompressionHandler(this IHttpClientBuilder builder, Action<HttpCompressionOptions, IServiceProvider> configure)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configure);
 
-            if (compressionLevel.HasValue)
-            {
-                handlerCompressionLevel = compressionLevel.Value;
-            }
+        var optionsName = GetOptionsName(builder.Name);
 
-            return new HttpCompressionHandler(handlerCompressionProviders, handlerMediaTypes, handlerCompressionEncoding, handlerCompressionLevel);
-        }
+        builder.Services.AddOptions<HttpCompressionOptions>(optionsName).Configure(configure);
+
+        return builder.AddHttpMessageHandler(services => CreateHttpMessageHandler(services, optionsName));
+    }
+
+    private static HttpCompressionHandler CreateHttpMessageHandler(IServiceProvider services, string? optionsName)
+    {
+        var optionsSnapshot = services.GetRequiredService<IOptionsSnapshot<HttpCompressionOptions>>();
+        var options = optionsSnapshot.Get(optionsName);
+
+        return new(
+            options.CompressionProviders.ToFrozenDictionary(),
+            options.MediaTypes.ToFrozenSet(),
+            options.CompressionEncoding ?? "identity",
+            options.CompressionLevel);
+    }
+
+    private static string GetOptionsName(string httpClientName)
+    {
+        return $"{httpClientName}-{Guid.NewGuid()}";
     }
 }

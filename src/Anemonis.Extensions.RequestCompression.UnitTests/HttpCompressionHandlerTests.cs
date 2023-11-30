@@ -77,8 +77,22 @@ public sealed partial class HttpCompressionHandlerTests
             })
             .AddHttpClient(Options.DefaultName)
             .ConfigurePrimaryHttpMessageHandler(() => new FakeMessageHandler(HandleHttpRequest))
-            .AddCompressionHandler(compressionEncoding: "fe1")
-            .AddCompressionHandler(compressionEncoding: "fe2");
+            .AddCompressionHandler(options =>
+            {
+                options.CompressionProviders.Clear();
+                options.CompressionProviders["fe1"] = new FakeCompressionProvider("fe1");
+                options.MediaTypes.Clear();
+                options.MediaTypes.Add("text/plain");
+                options.CompressionEncoding = "fe1";
+            })
+            .AddCompressionHandler(options =>
+            {
+                options.CompressionProviders.Clear();
+                options.CompressionProviders["fe2"] = new FakeCompressionProvider("fe2");
+                options.MediaTypes.Clear();
+                options.MediaTypes.Add("text/plain");
+                options.CompressionEncoding = "fe2";
+            });
 
         var provider = services.BuildServiceProvider();
         var client = provider.GetRequiredService<HttpClient>();
