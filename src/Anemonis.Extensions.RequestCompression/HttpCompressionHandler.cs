@@ -34,11 +34,11 @@ internal sealed class HttpCompressionHandler : DelegatingHandler
 
         if (request.Method.Equals(HttpMethod.Options))
         {
-            if (request.Options.TryGetValue(HttpCompressionOptionKeys.HttpCompressionContext, out var context) && (context is not null))
+            if (request.Options.TryGetValue(HttpCompressionOptionKeys.HttpCompressionContext, out var compressionContext) && (compressionContext is not null))
             {
                 var response = base.Send(request, cancellationToken);
 
-                TryFindAcceptableContentEncoding(response, context);
+                TryFindQualifiedEncoding(response, compressionContext);
 
                 return response;
             }
@@ -51,9 +51,9 @@ internal sealed class HttpCompressionHandler : DelegatingHandler
         {
             if (request.Content is not null)
             {
-                request.Options.TryGetValue(HttpCompressionOptionKeys.HttpCompressionContext, out var context);
+                request.Options.TryGetValue(HttpCompressionOptionKeys.HttpCompressionContext, out var compressionContext);
 
-                TryEncodeContent(request, context);
+                TryCompressContent(request, compressionContext);
             }
 
             return base.Send(request, cancellationToken);
@@ -69,9 +69,9 @@ internal sealed class HttpCompressionHandler : DelegatingHandler
 
         if (request.Method.Equals(HttpMethod.Options))
         {
-            if (request.Options.TryGetValue(HttpCompressionOptionKeys.HttpCompressionContext, out var context) && (context is not null))
+            if (request.Options.TryGetValue(HttpCompressionOptionKeys.HttpCompressionContext, out var compressionContext) && (compressionContext is not null))
             {
-                return SendCoreAsync(request, context, cancellationToken);
+                return SendCoreAsync(request, compressionContext, cancellationToken);
             }
             else
             {
@@ -84,37 +84,37 @@ internal sealed class HttpCompressionHandler : DelegatingHandler
             {
                 request.Options.TryGetValue(HttpCompressionOptionKeys.HttpCompressionContext, out var context);
 
-                TryEncodeContent(request, context);
+                TryCompressContent(request, context);
             }
 
             return base.SendAsync(request, cancellationToken);
         }
 
-        async Task<HttpResponseMessage> SendCoreAsync(HttpRequestMessage request, HttpCompressionContext context, CancellationToken cancellationToken)
+        async Task<HttpResponseMessage> SendCoreAsync(HttpRequestMessage request, HttpCompressionContext compressionContext, CancellationToken cancellationToken)
         {
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
-            TryFindAcceptableContentEncoding(response, context);
+            TryFindQualifiedEncoding(response, compressionContext);
 
             return response;
         }
     }
 
-    private void TryEncodeContent(HttpRequestMessage request, HttpCompressionContext? context)
+    private void TryCompressContent(HttpRequestMessage request, HttpCompressionContext? compressionContext)
     {
-        var contentEncoding = _compressionEncoding;
+        var compressionEncoding = _compressionEncoding;
 
-        if (context is not null)
+        if (compressionContext is not null)
         {
-            contentEncoding = context.CompressionEncoding;
+            compressionEncoding = compressionContext.CompressionEncoding;
         }
 
-        if (string.IsNullOrEmpty(contentEncoding) || string.Equals(contentEncoding, "identity", StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrEmpty(compressionEncoding) || string.Equals(compressionEncoding, "identity", StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
 
-        if (!_compressionProviders.TryGetValue(contentEncoding, out var compressionProvider))
+        if (!_compressionProviders.TryGetValue(compressionEncoding, out var compressionProvider))
         {
             return;
         }
@@ -123,42 +123,27 @@ internal sealed class HttpCompressionHandler : DelegatingHandler
 
         if (!string.IsNullOrEmpty(mediaType) && _mediaTypes.Contains(mediaType))
         {
-            request.Content = CreateEncodedContent(request.Content, contentEncoding, compressionProvider, _compressionLevel);
+            request.Content = CreateCompressionContent(request.Content, compressionEncoding, compressionProvider, _compressionLevel);
         }
     }
 
-    private void TryFindAcceptableContentEncoding(HttpResponseMessage response, HttpCompressionContext context)
+    private void TryFindQualifiedEncoding(HttpResponseMessage response, HttpCompressionContext compressionContext)
     {
         if (!response.IsSuccessStatusCode || !response.Headers.NonValidated.TryGetValues("Accept-Encoding", out var headerValues))
         {
             return;
         }
 
-        if (TryGetContentEncoding(headerValues, _compressionProviders, out var contentEncoding))
+        if (TryGetQualifiedEncoding(headerValues, _compressionProviders, out var compressionEncoding))
         {
-            context.CompressionEncoding = contentEncoding;
+            compressionContext.CompressionEncoding = compressionEncoding;
         }
     }
 
-    private static HttpCompressionContent CreateEncodedContent(HttpContent source, string contentEncoding, HttpCompressionProvider provider, CompressionLevel level)
+    private static bool TryGetQualifiedEncoding(HeaderStringValues headerValues, FrozenDictionary<string, HttpCompressionProvider> compressionProviders, [NotNullWhen(true)] out string? compressionEncoding)
     {
-        var result = new HttpCompressionContent(source, provider, level);
-
-        foreach (var (headerName, headerValues) in source.Headers.NonValidated)
-        {
-            result.Headers.TryAddWithoutValidation(headerName, headerValues);
-        }
-
-        result.Headers.ContentEncoding.Add(contentEncoding);
-        result.Headers.ContentLength = null;
-
-        return result;
-    }
-
-    private static bool TryGetContentEncoding(HeaderStringValues headerValues, FrozenDictionary<string, HttpCompressionProvider> compressionProviders, [NotNullWhen(true)] out string? contentEncoding)
-    {
-        var bestContentEncoding = default(string);
-        var bestContentEncodingQuality = .0;
+        var bestEncoding = default(string);
+        var bestEncodingQuality = .0;
 
         foreach (var headerValue in headerValues)
         {
@@ -176,27 +161,27 @@ internal sealed class HttpCompressionHandler : DelegatingHandler
                     continue;
                 }
 
-                var currentContentEncodingQuality = headerValueWithQuailty.Quality.HasValue ? headerValueWithQuailty.Quality.Value : 1;
+                var currentEncodingQuality = headerValueWithQuailty.Quality.HasValue ? headerValueWithQuailty.Quality.Value : 1;
 
-                if (currentContentEncodingQuality <= bestContentEncodingQuality)
+                if (currentEncodingQuality <= bestEncodingQuality)
                 {
                     continue;
                 }
 
-                var currentContentEncoding = headerValueWithQuailty.Value;
+                var currentEncoding = headerValueWithQuailty.Value;
 
-                if (string.Equals(currentContentEncoding, "*", StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(currentContentEncoding, "identity", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(currentEncoding, "*", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(currentEncoding, "identity", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
-                if (compressionProviders.ContainsKey(currentContentEncoding))
+                if (compressionProviders.ContainsKey(currentEncoding))
                 {
-                    bestContentEncoding = currentContentEncoding;
-                    bestContentEncodingQuality = currentContentEncodingQuality;
+                    bestEncoding = currentEncoding;
+                    bestEncodingQuality = currentEncodingQuality;
 
-                    if (bestContentEncodingQuality >= 1)
+                    if (bestEncodingQuality >= 1)
                     {
                         break;
                     }
@@ -204,8 +189,23 @@ internal sealed class HttpCompressionHandler : DelegatingHandler
             }
         }
 
-        contentEncoding = bestContentEncoding;
+        compressionEncoding = bestEncoding;
 
-        return contentEncoding is not null;
+        return compressionEncoding is not null;
+    }
+
+    private static HttpCompressionContent CreateCompressionContent(HttpContent originalContent, string compressionEncoding, HttpCompressionProvider compressionProvider, CompressionLevel compressionLevel)
+    {
+        var compressionContent = new HttpCompressionContent(originalContent, compressionProvider, compressionLevel);
+
+        foreach (var (headerName, headerValues) in originalContent.Headers.NonValidated)
+        {
+            compressionContent.Headers.TryAddWithoutValidation(headerName, headerValues);
+        }
+
+        compressionContent.Headers.ContentEncoding.Add(compressionEncoding);
+        compressionContent.Headers.ContentLength = null;
+
+        return compressionContent;
     }
 }

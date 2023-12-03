@@ -8,6 +8,6 @@ internal sealed class BrotliCompressionProvider : HttpCompressionProvider
 {
     public override Stream CreateStream(Stream outputStreeam, CompressionLevel compressionLevel)
     {
-        return new BrotliStream(outputStreeam, compressionLevel, leaveOpen: true);
+        return new BrotliStream(outputStreeam, compressionLevel, true);
     }
 }

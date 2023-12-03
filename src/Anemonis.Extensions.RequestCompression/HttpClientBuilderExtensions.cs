@@ -6,24 +6,24 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-/// <summary>Provides <see cref="IHttpClientBuilder" /> extension methods for HTTP request compression.</summary>
+/// <summary>Provides extension methods for the <see cref="IHttpClientBuilder" /> interface that enable HTTP request compression. This class cannot be inherited.</summary>
 public static class HttpClientBuilderExtensions
 {
-    /// <summary>Adds a handler for transparent HTTP request compression.</summary>
+    /// <summary>Adds a message handler for transparent HTTP request compression.</summary>
     /// <param name="builder">The builder instance.</param>
-    /// <returns>The value of <paramref name="builder"/>.</returns>
+    /// <returns>The value of <paramref name="builder" />.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="builder" /> is <see langword="null" />.</exception>
     public static IHttpClientBuilder AddCompressionHandler(this IHttpClientBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        return builder.AddHttpMessageHandler(static services => CreateHttpMessageHandler(services, Options.Options.DefaultName));
+        return builder.AddHttpMessageHandler(static services => CreateCompressionHandler(services, Options.Options.DefaultName));
     }
 
-    /// <summary>Adds a handler for transparent HTTP request compression.</summary>
+    /// <summary>Adds a message handler for transparent HTTP request compression.</summary>
     /// <param name="builder">The builder instance.</param>
     /// <param name="configure">The callback that configures the handler.</param>
-    /// <returns>The value of <paramref name="builder"/>.</returns>
+    /// <returns>The value of <paramref name="builder" />.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="builder" /> or <paramref name="configure" /> is <see langword="null" />.</exception>
     public static IHttpClientBuilder AddCompressionHandler(this IHttpClientBuilder builder, Action<HttpCompressionOptions> configure)
     {
@@ -34,13 +34,13 @@ public static class HttpClientBuilderExtensions
 
         builder.Services.AddOptions<HttpCompressionOptions>(optionsName).Configure(configure);
 
-        return builder.AddHttpMessageHandler(services => CreateHttpMessageHandler(services, optionsName));
+        return builder.AddHttpMessageHandler(services => CreateCompressionHandler(services, optionsName));
     }
 
-    /// <summary>Adds a handler for transparent HTTP request compression.</summary>
+    /// <summary>Adds a message handler for transparent HTTP request compression.</summary>
     /// <param name="builder">The builder instance.</param>
     /// <param name="configure">The callback that configures the handler.</param>
-    /// <returns>The value of <paramref name="builder"/>.</returns>
+    /// <returns>The value of <paramref name="builder" />.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="builder" /> or <paramref name="configure" /> is <see langword="null" />.</exception>
     public static IHttpClientBuilder AddCompressionHandler(this IHttpClientBuilder builder, Action<HttpCompressionOptions, IServiceProvider> configure)
     {
@@ -51,10 +51,10 @@ public static class HttpClientBuilderExtensions
 
         builder.Services.AddOptions<HttpCompressionOptions>(optionsName).Configure(configure);
 
-        return builder.AddHttpMessageHandler(services => CreateHttpMessageHandler(services, optionsName));
+        return builder.AddHttpMessageHandler(services => CreateCompressionHandler(services, optionsName));
     }
 
-    private static HttpCompressionHandler CreateHttpMessageHandler(IServiceProvider services, string? optionsName)
+    private static HttpCompressionHandler CreateCompressionHandler(IServiceProvider services, string? optionsName)
     {
         var optionsSnapshot = services.GetRequiredService<IOptionsSnapshot<HttpCompressionOptions>>();
         var options = optionsSnapshot.Get(optionsName);

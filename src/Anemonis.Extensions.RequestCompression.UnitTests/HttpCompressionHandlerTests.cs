@@ -8,7 +8,37 @@ namespace Anemonis.Extensions.RequestCompression.UnitTests;
 public sealed partial class HttpCompressionHandlerTests
 {
     [TestMethod]
-    public async Task AddCompression()
+    public async Task AddCompressionWithDefaultOptions()
+    {
+        static Task<HttpResponseMessage> HandleHttpRequest(HttpRequestMessage request)
+        {
+            Assert.IsNotNull(request.Content);
+            Assert.IsNull(request.Content.Headers.ContentLength);
+            Assert.AreEqual("br", string.Join('+', request.Content.Headers.ContentEncoding));
+
+            return Task.FromResult(new HttpResponseMessage());
+        }
+
+        var services = new ServiceCollection();
+
+        services
+            .AddHttpClient(Options.DefaultName)
+            .ConfigurePrimaryHttpMessageHandler(() => new FakeMessageHandler(HandleHttpRequest))
+            .AddCompressionHandler();
+
+        var provider = services.BuildServiceProvider();
+        var client = provider.GetRequiredService<HttpClient>();
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+
+        request.Content = new StringContent("content");
+        request.Content.Headers.ContentType = new("application/json");
+
+        await client.SendAsync(request);
+    }
+
+    [TestMethod]
+    public async Task AddCompressionWithGlobalOptions()
     {
         static async Task<HttpResponseMessage> HandleHttpRequest(HttpRequestMessage request)
         {
@@ -30,9 +60,9 @@ public sealed partial class HttpCompressionHandlerTests
             {
                 options.CompressionProviders.Clear();
                 options.CompressionProviders["fe"] = new FakeCompressionProvider("fe");
-                options.CompressionEncoding = "fe";
                 options.MediaTypes.Clear();
                 options.MediaTypes.Add("text/plain");
+                options.CompressionEncoding = "fe";
             })
             .AddHttpClient(Options.DefaultName)
             .ConfigurePrimaryHttpMessageHandler(() => new FakeMessageHandler(HandleHttpRequest))
@@ -49,17 +79,17 @@ public sealed partial class HttpCompressionHandlerTests
     }
 
     [TestMethod]
-    public async Task AddCompressionChain()
+    public async Task AddCompressionWithLocalOptions()
     {
         static async Task<HttpResponseMessage> HandleHttpRequest(HttpRequestMessage request)
         {
             Assert.IsNotNull(request.Content);
             Assert.IsNull(request.Content.Headers.ContentLength);
-            Assert.AreEqual("fe1+fe2", string.Join('+', request.Content.Headers.ContentEncoding));
+            Assert.AreEqual("fe", string.Join('+', request.Content.Headers.ContentEncoding));
 
             var content = await request.Content.ReadAsStringAsync();
 
-            Assert.AreEqual("content+fe1+fe2", content);
+            Assert.AreEqual("content+fe", content);
 
             return new();
         }
@@ -67,14 +97,42 @@ public sealed partial class HttpCompressionHandlerTests
         var services = new ServiceCollection();
 
         services
-            .Configure<HttpCompressionOptions>(options =>
+            .AddHttpClient(Options.DefaultName)
+            .ConfigurePrimaryHttpMessageHandler(() => new FakeMessageHandler(HandleHttpRequest))
+            .AddCompressionHandler(options =>
             {
                 options.CompressionProviders.Clear();
-                options.CompressionProviders["fe1"] = new FakeCompressionProvider("fe1");
-                options.CompressionProviders["fe2"] = new FakeCompressionProvider("fe2");
+                options.CompressionProviders["fe"] = new FakeCompressionProvider("fe");
                 options.MediaTypes.Clear();
                 options.MediaTypes.Add("text/plain");
-            })
+                options.CompressionEncoding = "fe";
+            });
+
+        var provider = services.BuildServiceProvider();
+        var client = provider.GetRequiredService<HttpClient>();
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+
+        request.Content = new StringContent("content");
+
+        await client.SendAsync(request);
+    }
+
+    [TestMethod]
+    public async Task AddCompressionChain()
+    {
+        static Task<HttpResponseMessage> HandleHttpRequest(HttpRequestMessage request)
+        {
+            Assert.IsNotNull(request.Content);
+            Assert.IsNull(request.Content.Headers.ContentLength);
+            Assert.AreEqual("fe1+fe2", string.Join('+', request.Content.Headers.ContentEncoding));
+
+            return Task.FromResult(new HttpResponseMessage());
+        }
+
+        var services = new ServiceCollection();
+
+        services
             .AddHttpClient(Options.DefaultName)
             .ConfigurePrimaryHttpMessageHandler(() => new FakeMessageHandler(HandleHttpRequest))
             .AddCompressionHandler(options =>
@@ -111,7 +169,7 @@ public sealed partial class HttpCompressionHandlerTests
     [DataRow("identity", null)]
     [DataRow("identity, ue, fe, *", "fe")]
     [DataRow("identity;q=1.0, ue;q=0.9, fe;q=0.8, *;q=0.7", "fe")]
-    public async Task DiscoverAcceptableCompression(string serverHeader, string clientHeader)
+    public async Task DiscoverQualifiedEncoding(string serverHeader, string clientHeader)
     {
         Task<HttpResponseMessage> HandleHttpRequest(HttpRequestMessage request)
         {

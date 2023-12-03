@@ -8,6 +8,6 @@ internal sealed class GzipCompressionProvider : HttpCompressionProvider
 {
     public override Stream CreateStream(Stream outputStreeam, CompressionLevel compressionLevel)
     {
-        return new GZipStream(outputStreeam, compressionLevel, leaveOpen: true);
+        return new GZipStream(outputStreeam, compressionLevel, true);
     }
 }

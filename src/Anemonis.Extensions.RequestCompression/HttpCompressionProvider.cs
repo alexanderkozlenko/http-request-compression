@@ -12,8 +12,8 @@ public abstract class HttpCompressionProvider
     {
     }
 
-    /// <summary>When overridden in a derived class, creates a compression stream which writes the compressed content to the underlying stream.</summary>
-    /// <param name="outputStreeam">Teh stream to write the compressed content to.</param>
+    /// <summary>When overridden in a derived class, creates a compression stream that writes the compressed content to the underlying stream.</summary>
+    /// <param name="outputStreeam">The stream to write the compressed content to.</param>
     /// <param name="compressionLevel">The level of compression to use.</param>
     /// <returns>A writable stream.</returns>
     public abstract Stream CreateStream(Stream outputStreeam, CompressionLevel compressionLevel);

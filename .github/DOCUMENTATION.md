@@ -40,6 +40,7 @@ services.AddHttpClient("my-client")
         {
             options.MediaTypes.Add("application/json-seq");
             options.CompressionEncoding = "deflate";
+            options.CompressionLevel = CompressionLevel.Optimal;
         });
 ```
 
@@ -54,6 +55,7 @@ services.Configure<HttpCompressionOptions>(options =>
         {
             options.MediaTypes.Add("application/json-seq");
             options.CompressionEncoding = "deflate";
+            options.CompressionLevel = CompressionLevel.Optimal;
         });
 
 services.AddHttpClient("my-client")
