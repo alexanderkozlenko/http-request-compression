@@ -1,11 +1,11 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directory: ".github"
     schedule:
       interval: "daily"
   - package-ecosystem: "nuget"
-    directory: "/"
+    directory: "src"
     schedule:
       interval: "daily"
     ignore:
