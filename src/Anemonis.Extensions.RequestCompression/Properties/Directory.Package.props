@@ -1,5 +1,10 @@
 ﻿<Project>
   <PropertyGroup>
+    <PackageReleaseNotes>https://github.com/alexanderkozlenko/http-request-compression/releases</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
+    <Authors><![CDATA[Oleksandr Kozlenko]]></Authors>
+    <Copyright><![CDATA[© Oleksandr Kozlenko. All rights reserved.]]></Copyright>
     <PackageDescription><![CDATA[An HTTP client message handler for transparent request compression.]]></PackageDescription>
     <PackageTags><![CDATA[http compression brotli deflate gzip]]></PackageTags>
   </PropertyGroup>
