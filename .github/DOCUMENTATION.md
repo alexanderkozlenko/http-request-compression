@@ -115,5 +115,5 @@ app.Run();
 
 ### References
 
-- [RFC 7694 - Hypertext Transfer Protocol (HTTP) Client-Initiated Content-Encoding](https://datatracker.ietf.org/doc/html/rfc7694)
+- [RFC 9110 - HTTP Semantics](https://datatracker.ietf.org/doc/html/rfc9110)
 - [ASP.NET Core - Request decompression in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/request-decompression)
