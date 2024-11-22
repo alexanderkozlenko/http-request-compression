@@ -68,6 +68,6 @@ public static class HttpClientBuilderExtensions
 
     private static string GetOptionsName(string httpClientName)
     {
-        return $"{httpClientName}-{Guid.NewGuid()}";
+        return $"{httpClientName}-{Guid.CreateVersion7()}";
     }
 }

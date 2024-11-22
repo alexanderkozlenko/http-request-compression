@@ -29,12 +29,12 @@ public sealed partial class HttpCompressionHandlerTests
         var provider = services.BuildServiceProvider();
         var client = provider.GetRequiredService<HttpClient>();
 
-        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+        using var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         request.Content = new StringContent("content");
         request.Content.Headers.ContentType = new("application/json");
 
-        await client.SendAsync(request);
+        using var response = await client.SendAsync(request);
     }
 
     [TestMethod]
@@ -71,11 +71,11 @@ public sealed partial class HttpCompressionHandlerTests
         var provider = services.BuildServiceProvider();
         var client = provider.GetRequiredService<HttpClient>();
 
-        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+        using var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         request.Content = new StringContent("content");
 
-        await client.SendAsync(request);
+        using var response = await client.SendAsync(request);
     }
 
     [TestMethod]
@@ -111,11 +111,11 @@ public sealed partial class HttpCompressionHandlerTests
         var provider = services.BuildServiceProvider();
         var client = provider.GetRequiredService<HttpClient>();
 
-        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+        using var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         request.Content = new StringContent("content");
 
-        await client.SendAsync(request);
+        using var response = await client.SendAsync(request);
     }
 
     [TestMethod]
@@ -155,11 +155,11 @@ public sealed partial class HttpCompressionHandlerTests
         var provider = services.BuildServiceProvider();
         var client = provider.GetRequiredService<HttpClient>();
 
-        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+        using var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         request.Content = new StringContent("content");
 
-        await client.SendAsync(request);
+        using var response = await client.SendAsync(request);
     }
 
     [TestMethod]
@@ -215,19 +215,19 @@ public sealed partial class HttpCompressionHandlerTests
         var client = provider.GetRequiredService<HttpClient>();
         var context = new HttpCompressionContext();
 
-        var request1 = new HttpRequestMessage(HttpMethod.Options, "http://localhost");
+        using var request1 = new HttpRequestMessage(HttpMethod.Options, "http://localhost");
 
         request1.Options.Set(HttpCompressionOptionKeys.HttpCompressionContext, context);
 
-        var response1 = await client.SendAsync(request1);
+        using var response1 = await client.SendAsync(request1);
 
         Assert.AreEqual(clientHeader, context.CompressionEncoding);
 
-        var request2 = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
+        using var request2 = new HttpRequestMessage(HttpMethod.Post, "http://localhost");
 
         request2.Content = new StringContent("content");
         request2.Options.Set(HttpCompressionOptionKeys.HttpCompressionContext, context);
 
-        await client.SendAsync(request2);
+        using var response2 = await client.SendAsync(request2);
     }
 }

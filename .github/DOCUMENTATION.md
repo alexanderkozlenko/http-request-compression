@@ -64,7 +64,7 @@ services.AddHttpClient("my-client")
 
 <p />
 
-How to discover and apply a compression encoding supported by a server as per RFC 7694:
+How to discover and apply a compression encoding supported by a server:
 
 <p />
 
