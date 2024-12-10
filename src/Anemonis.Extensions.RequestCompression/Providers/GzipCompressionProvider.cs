@@ -6,8 +6,8 @@ namespace Anemonis.Extensions.RequestCompression.Providers;
 
 internal sealed class GzipCompressionProvider : HttpCompressionProvider
 {
-    public override Stream CreateStream(Stream outputStreeam, CompressionLevel compressionLevel)
+    public override Stream CreateStream(Stream outputStream, CompressionLevel compressionLevel)
     {
-        return new GZipStream(outputStreeam, compressionLevel, true);
+        return new GZipStream(outputStream, compressionLevel, true);
     }
 }

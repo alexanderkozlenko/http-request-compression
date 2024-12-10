@@ -2,11 +2,16 @@
 
 <p />
 
-### Introduction
+### About
 
 <p />
 
 The library includes built-in compression providers for Brotli, DEFLATE, and GZIP formats. With the default options, any HTTP request content of the "application/json" media type will be compressed with Brotli format using the fastest level of compression. Use OPTIONS request method with an HTTP compression context to discover an available compression encoding supported by a server.
+
+<p />
+
+> [!NOTE]
+> The built-in Brotli compression provider is not available for ASP.NET Core Blazor WebAssembly (WASM).
 
 <p />
 

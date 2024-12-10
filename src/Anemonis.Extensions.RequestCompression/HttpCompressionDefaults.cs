@@ -17,12 +17,17 @@ internal static class HttpCompressionDefaults
 
     private static Dictionary<string, HttpCompressionProvider> CreateCompressionProviders()
     {
-        return new(StringComparer.OrdinalIgnoreCase)
+        var providers = new Dictionary<string, HttpCompressionProvider>(StringComparer.OrdinalIgnoreCase);
+
+        if (!OperatingSystem.IsBrowser())
         {
-            ["br"] = new BrotliCompressionProvider(),
-            ["deflate"] = new DeflateCompressionProvider(),
-            ["gzip"] = new GzipCompressionProvider(),
-        };
+            providers["br"] = new BrotliCompressionProvider();
+        }
+
+        providers["deflate"] = new DeflateCompressionProvider();
+        providers["gzip"] = new GzipCompressionProvider();
+
+        return providers;
     }
 
     private static HashSet<string> CreateMediaTypes()
