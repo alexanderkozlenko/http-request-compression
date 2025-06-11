@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="src/Anemonis.Extensions.RequestCompression.UnitTests/Anemonis.Extensions.RequestCompression.UnitTests.csproj" />
+  <Project Path="src/Anemonis.Extensions.RequestCompression/Anemonis.Extensions.RequestCompression.csproj" />
+</Solution>
