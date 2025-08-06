@@ -1,6 +1,6 @@
 <Project>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.8" />
     <PackageVersion Include="MSTest" Version="3.9.2" />
   </ItemGroup>
 </Project>
